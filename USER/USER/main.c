@@ -3,6 +3,13 @@
 #include "delay.h"
 #include "lcd.h"
 #include "ov7670.h"
+
+#if 1==VERSIONSBY
+#error 1
+#elif 2==VERSIONSBY
+//#error 2
+#endif
+
 extern u8 Camera_Init(void);
 void SYS_INIT(void)
 {
@@ -13,12 +20,16 @@ void SYS_INIT(void)
     USART2_Configuration(115200);
     USART_NVIC_Configuration(2,1, 0, 0);
     printf("\r\nNRF24L01 IS OK !");
+	  
     /***LCD≥ı ºªØ***/
     LCD_Init();
+	  LCD_ShowString(10,20,16*10,16,16,"hello lcd");
 		while(OV7670_Init())
 		{
 			delay_ms(300);
+			LCD_ShowString(10,36,16*20,16,16,"ov7670 error");
 		}
+		LCD_ShowString(10,36,16*20,16,16,"ov7670 ok");
 		delay_ms(1000);
 		Cam_Start();
 }
