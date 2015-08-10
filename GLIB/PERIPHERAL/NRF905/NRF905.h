@@ -16,17 +16,14 @@
 #define TRX_CE PCout(9)  //PC9.40
 #define PWR_UP PAout(8)  //PA8.41
 #define TXEN PAout(9)    //PA9.42
-//#define uCLK   
+//#define uCLK   //Ê±ÖÓ Êä³ö
 
 
 #define TxRxBuf_Len 0x20
 extern u8 TxRxBuf[TxRxBuf_Len];
 
 
-
 void GPIO_NRF905_Init(void);
-//u8 SPI_Read(void);
-//void SPI_Write(u8 send);
 void nRF905Init(void);
 void Config_Nrf905(void);
 void TxPacket(u8* TxRxBuf);
@@ -34,10 +31,6 @@ void SetTxMode(void);
 void SetRxMode(void);
 u8 CheckDR(void);
 void RxPacket(void);
-void  RX(void);
-
-
-
 
 #endif
 

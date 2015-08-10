@@ -1,122 +1,47 @@
 #ifndef _NRF24L01_H_
 #define _NRF24L01_H_
-#include "stm32f10x.h"
-#include "stm32_config.h"
-//#include "spi.h"    //nrf24l01ĞèÒªspi.hÖĞµÄu8 Spi_RW(u8 dat)º¯Êı
+#include "sys.h"
 
-///*Ê¹ÓÃÓ²¼şSPI 1 or 2*/
-////#define NRF24L01_SPI1
-//#define NRF24L01_SPI2
-///*Ê¹ÓÃÈí¼şSPI*/
-////#define NRF24L01_SPISOFT
-
-///*ÅäÖÃSPI_NRF_SPIµÄCEÒı½Å*/
-//#define NRF24l01_CE_RCC  RCC_APB2Periph_GPIOB
-//#define NRF24l01_CE_GPIO GPIOB
-//#define NRF24l01_CE_PIN  GPIO_Pin_11
-///*ÅäÖÃSPI_NRF_SPIµÄ CSN Òı½Å*/
-//#define NRF24l01_CSN_RCC  RCC_APB2Periph_GPIOC
-//#define NRF24l01_CSN_GPIO GPIOC
-//#define NRF24l01_CSN_PIN  GPIO_Pin_6
-///*ÅäÖÃSPI_NRF_SPIµÄIRQÒı½Å*/
-//#define NRF24l01_IQR_RCC  RCC_APB2Periph_GPIOC
-//#define NRF24l01_IQR_GPIO GPIOC
-//#define NRF24l01_IQR_PIN  GPIO_Pin_7
-
-//#ifdef NRF24L01_SPISOFT
-//	/*ÅäÖÃSPI_NRF_SPIµÄ MOSI Òı½Å*/
-//	#define NRF24l01_MOSI_RCC  RCC_APB2Periph_GPIOB
-//	#define NRF24l01_MOSI_GPIO GPIOB
-//	#define NRF24l01_MOSI_PIN  GPIO_Pin_15
-//	/*ÅäÖÃSPI_NRF_SPIµÄ SIMO Òı½Å*/
-//	#define NRF24l01_SIMO_RCC  RCC_APB2Periph_GPIOB
-//	#define NRF24l01_SIMO_GPIO GPIOB
-//	#define NRF24l01_SIMO_PIN  GPIO_Pin_14
-//	/*ÅäÖÃSPI_NRF_SPIµÄ SCL(SCK) Òı½Å*/
-//	#define NRF24l01_SCL_RCC   RCC_APB2Periph_GPIOB
-//	#define NRF24l01_SCL_GPIO  GPIOB
-//	#define NRF24l01_SCL_PIN   GPIO_Pin_13
-//#endif
+/****************************************/
+/***USART***/
+/********************************************
+***********************************************\
+ * _________________ *
+ * |8 IQR    7 MISO| *c1  c2
+ * |               | *
+ * |6 MOSI   5 SCK | *c3  a0
+ * |               | *
+ * |4 CSN    3 CE  | *a5  a2
+ * |       --------| *
+ * |2 VCC  | 1 GND | *
+ * ----------------- *
+\**********************************************/
 
 
-#ifdef NRF24L01_SPISOFT
-	#define NRF24l01_SPI_SCL_H   GPIO_SetBits  (NRF24l01_SCL_GPIO, NRF24l01_SCL_PIN);
-	#define NRF24l01_SPI_SCL_L   GPIO_ResetBits(NRF24l01_SCL_GPIO, NRF24l01_SCL_PIN);
-	#define NRF24l01_SPI_MOSI_H  GPIO_SetBits  (NRF24l01_MOSI_GPIO, NRF24l01_MOSI_PIN);
-	#define NRF24l01_SPI_MOSI_L  GPIO_ResetBits(NRF24l01_MOSI_GPIO, NRF24l01_MOSI_PIN);
-	#define NRF24l01_SPI_SIMO    GPIO_ReadInputDataBit(NRF24l01_SIMO_GPIO,NRF24l01_SCL_PIN);
-#endif
-#define SPI_CE_H()   GPIO_SetBits  (NRF24l01_CE_GPIO, NRF24l01_CE_PIN)
-#define SPI_CE_L()   GPIO_ResetBits(NRF24l01_CE_GPIO, NRF24l01_CE_PIN)
-#define SPI_CSN_H()  GPIO_SetBits  (NRF24l01_CSN_GPIO, NRF24l01_CSN_PIN)
-#define SPI_CSN_L()  GPIO_ResetBits(NRF24l01_CSN_GPIO, NRF24l01_CSN_PIN)
+enum{
+MODEL_RX  = 1,//æ™®é€šæ¥æ”¶
+MODEL_TX  = 2,//æ™®é€šå‘é€
+MODEL_RX2 = 3,//æ¥æ”¶æ¨¡å¼2,ç”¨äºåŒå‘ä¼ è¾“
+MODEL_TX2 = 4 //å‘é€æ¨¡å¼2,ç”¨äºåŒå‘ä¼ è¾“
+};
 
-//***************************************NRF24L01¼Ä´æÆ÷Ö¸Áî*******************************************************
-#define NRF_READ_REG    0x00  // ¶Á¼Ä´æÆ÷Ö¸Áî
-#define NRF_WRITE_REG   0x20    // Ğ´¼Ä´æÆ÷Ö¸Áî
-#define R_RX_PL_WID     0x60
-#define RD_RX_PLOAD     0x61  // ¶ÁÈ¡½ÓÊÕÊı¾İÖ¸Áî
-#define WR_TX_PLOAD     0xA0  // Ğ´´ı·¢Êı¾İÖ¸Áî
-#define FLUSH_TX        0xE1    // ³åÏ´·¢ËÍ FIFOÖ¸Áî
-#define FLUSH_RX        0xE2  // ³åÏ´½ÓÊÕ FIFOÖ¸Áî
-#define REUSE_TX_PL     0xE3  // ¶¨ÒåÖØ¸´×°ÔØÊı¾İÖ¸Áî
-#define NOP             0xFF  // ±£Áô
-//*************************************SPI(nRF24L01)¼Ä´æÆ÷µØÖ·****************************************************
-#define CONFIG          0x00  // ÅäÖÃÊÕ·¢×´Ì¬£¬CRCĞ£ÑéÄ£Ê½ÒÔ¼°ÊÕ·¢×´Ì¬ÏìÓ¦·½Ê½
-#define EN_AA           0x01  // ×Ô¶¯Ó¦´ğ¹¦ÄÜÉèÖÃ
-#define EN_RXADDR       0x02  // ¿ÉÓÃĞÅµÀÉèÖÃ
-#define SETUP_AW        0x03  // ÊÕ·¢µØÖ·¿í¶ÈÉèÖÃ
-#define SETUP_RETR      0x04  // ×Ô¶¯ÖØ·¢¹¦ÄÜÉèÖÃ
-#define RF_CH           0x05  // ¹¤×÷ÆµÂÊÉèÖÃ
-#define RF_SETUP        0x06  // ·¢ÉäËÙÂÊ¡¢¹¦ºÄ¹¦ÄÜÉèÖÃ
-#define NRFRegSTATUS    0x07  // ×´Ì¬¼Ä´æÆ÷
-#define OBSERVE_TX      0x08  // ·¢ËÍ¼à²â¹¦ÄÜ
-#define CD              0x09  // µØÖ·¼ì²â           
-#define RX_ADDR_P0      0x0A  // ÆµµÀ0½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P1      0x0B  // ÆµµÀ1½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P2      0x0C  // ÆµµÀ2½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P3      0x0D  // ÆµµÀ3½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P4      0x0E  // ÆµµÀ4½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P5      0x0F  // ÆµµÀ5½ÓÊÕÊı¾İµØÖ·
-#define TX_ADDR         0x10  // ·¢ËÍµØÖ·¼Ä´æÆ÷
-#define RX_PW_P0        0x11  // ½ÓÊÕÆµµÀ0½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P1        0x12  // ½ÓÊÕÆµµÀ1½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P2        0x13  // ½ÓÊÕÆµµÀ2½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P3        0x14  // ½ÓÊÕÆµµÀ3½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P4        0x15  // ½ÓÊÕÆµµÀ4½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P5        0x16  // ½ÓÊÕÆµµÀ5½ÓÊÕÊı¾İ³¤¶È
-#define FIFO_STATUS     0x17  // FIFOÕ»ÈëÕ»³ö×´Ì¬¼Ä´æÆ÷ÉèÖÃ
-//*********************************************NRF24L01*************************************
-#define RX_DR   6       //ÖĞ¶Ï±êÖ¾
-#define TX_DS   5
-#define MAX_RT  4
 
-#define MODEL_RX    1   //ÆÕÍ¨½ÓÊÕ
-#define MODEL_TX    2   //ÆÕÍ¨·¢ËÍ
-#define MODEL_RX2   3   //½ÓÊÕÄ£Ê½2,ÓÃÓÚË«Ïò´«Êä
-#define MODEL_TX2   4   //·¢ËÍÄ£Ê½2,ÓÃÓÚË«Ïò´«Êä
-
-#define RX_PLOAD_WIDTH  32
-#define TX_PLOAD_WIDTH  32
-#define TX_ADR_WIDTH    5
-#define RX_ADR_WIDTH    5
-
-extern  u8  NRF24L01_RXDATA[RX_PLOAD_WIDTH];    //nrf24l01½ÓÊÕµ½µÄÊı¾İ
-extern  u8  NRF24L01_TXDATA[RX_PLOAD_WIDTH];    //nrf24l01ĞèÒª·¢ËÍµÄÊı¾İ
-extern  u8  NRF24L01_TXDATA_RC[RX_PLOAD_WIDTH]; //nrf24l01ĞèÒª·¢ËÍµÄÊı¾İ
-void Nrf24l01_Init(u8 model, u8 ch);                //³õÊ¼»¯,model=1/2/3/4,chÎªÊµÓÃµÄÍ¨µÀºÅ
-void NRF_TxPacket(uint8_t* tx_buf, uint8_t len);    //·¢ËÍÊı¾İ°ü,ÓÃÓÚmodel 2/4
-void NRF_TxPacket_AP(uint8_t* tx_buf, uint8_t len); //·¢ËÍÊı¾İ°ü,ÓÃÓÚmodel 3
+extern  u8  NRF24L01_RXDATA[];    //nrf24l01æ¥æ”¶åˆ°çš„æ•°æ®
+extern  u8  NRF24L01_TXDATA[];    //nrf24l01éœ€è¦å‘é€çš„æ•°æ®
+extern  u8  NRF24L01_TXDATA_RC[]; //nrf24l01éœ€è¦å‘é€çš„æ•°æ®
+void Nrf24l01_Init(u8 model, u8 ch);                //åˆå§‹åŒ–,model=1/2/3/4,chä¸ºå®ç”¨çš„é€šé“å·
+void NRF_TxPacket(uint8_t* tx_buf, uint8_t len);    //å‘é€æ•°æ®åŒ…,ç”¨äºmodel 2/4
+void NRF_TxPacket_AP(uint8_t* tx_buf, uint8_t len); //å‘é€æ•°æ®åŒ…,ç”¨äºmodel 3
 uint8_t NRF_Read_Reg(uint8_t reg);
 uint8_t NRF_Write_Reg(uint8_t reg, uint8_t value);
 uint8_t NRF_Read_Buf(uint8_t reg, uint8_t* pBuf, uint8_t uchars);
 uint8_t Nrf24l01_Check(void);
-extern u8 SPI1_ReadWriteByte(u8 TxData);
-extern u8 SPI2_ReadWriteByte(u8 TxData);
-
+void Nrf_Check_Event(void);
+u8 Nrf_Get_Sta(void);
+u8 Nrf_Get_FIFOSta(void);
 #endif
 /*
-ºÚ°å »Æ°å
+é»‘æ¿ é»„æ¿
 CE  PB11
 CSN PC6
 IRQ PC7

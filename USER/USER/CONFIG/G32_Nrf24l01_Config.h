@@ -1,42 +1,45 @@
 #ifndef _NRF24L01_CONFIG_H_
 #define _NRF24L01_CONFIG_H_
+#include "sys.h"
+/****************************************/
+/***USART***/
+/********************************************
+***********************************************\
+ * _________________ *
+ * |8 IQR    7 MISO| *c1  c2
+ * |               | *
+ * |6 MOSI   5 SCK | *c3  a0
+ * |               | *
+ * |4 CSN    3 CE  | *a5  a2
+ * |       --------| *
+ * |2 VCC  | 1 GND | *
+ * ----------------- *
+\**********************************************/
 
 /***24L01配置***/
 /*使用硬件SPI 1 or 2*/
 //#define NRF24L01_SPI1
-#define NRF24L01_SPI2
+//#define NRF24L01_SPI2
 /*使用软件SPI*/
-//#define NRF24L01_SPISOFT
+#define NRF24L01_SPI0
 
-/*配置SPI_NRF_SPI的CE引脚*/
-#define NRF24l01_CE_RCC  RCC_APB2Periph_GPIOB
-#define NRF24l01_CE_GPIO GPIOB
-#define NRF24l01_CE_PIN  GPIO_Pin_11
-/*配置SPI_NRF_SPI的 CSN 引脚*/
-#define NRF24l01_CSN_RCC  RCC_APB2Periph_GPIOC
-#define NRF24l01_CSN_GPIO GPIOC
-#define NRF24l01_CSN_PIN  GPIO_Pin_6
-/*配置SPI_NRF_SPI的IRQ引脚*/
-#define NRF24l01_IQR_RCC  RCC_APB2Periph_GPIOC
-#define NRF24l01_IQR_GPIO GPIOC
-#define NRF24l01_IQR_PIN  GPIO_Pin_7
+#define RX_PLOAD_WIDTH  32
+#define TX_PLOAD_WIDTH  32
+#define TX_ADR_WIDTH    5
+#define RX_ADR_WIDTH    5
 
-#ifdef NRF24L01_SPISOFT
-	/*配置SPI_NRF_SPI的 MOSI 引脚*/
-	#define NRF24l01_MOSI_RCC  RCC_APB2Periph_GPIOB
-	#define NRF24l01_MOSI_GPIO GPIOB
-	#define NRF24l01_MOSI_PIN  GPIO_Pin_15
-	/*配置SPI_NRF_SPI的 SIMO 引脚*/
-	#define NRF24l01_SIMO_RCC  RCC_APB2Periph_GPIOB
-	#define NRF24l01_SIMO_GPIO GPIOB
-	#define NRF24l01_SIMO_PIN  GPIO_Pin_14
-	/*配置SPI_NRF_SPI的 SCL(SCK) 引脚*/
-	#define NRF24l01_SCL_RCC   RCC_APB2Periph_GPIOB
-	#define NRF24l01_SCL_GPIO  GPIOB
-	#define NRF24l01_SCL_PIN   GPIO_Pin_13
-#endif
-/***24L01配置***/
 
+#define NRF24l01_CE_Init  PA2_OUT
+#define NRF24l01_CSN_Init PA5_OUT
+#define NRF24l01_IQR_Init PC1_In
+
+#define SPI_CE_H()   Set_A2
+#define SPI_CE_L()   Clr_A2
+#define SPI_CSN_H()  Set_A5
+#define SPI_CSN_L()  Clr_A5
+
+u8  TX_ADDRESS[TX_ADR_WIDTH] = {0xE1, 0xE2, 0xE3, 0x44, 0xE5}; //本地地址
+u8  RX_ADDRESS[RX_ADR_WIDTH] = {0xE1, 0xE2, 0xE3, 0x44, 0xE5}; //接收地址
 #endif
 /*
 黑板 黄板

@@ -61,6 +61,19 @@
 
 #define PGout(n)   BIT_ADDR(GPIOG_ODR_Addr,n)  //输出 
 #define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  //输入
+
+#define BYTE0(dwTemp)       (* (char *)(&(dwTemp)))
+#define BYTE1(dwTemp)       (*((char *)(&(dwTemp)) + 1))
+#define BYTE2(dwTemp)       (*((char *)(&(dwTemp)) + 2))
+#define BYTE3(dwTemp)       (*((char *)(&(dwTemp)) + 3))
+
+#define WORD0(dwTemp)       (* (int16_t *)(&dwTemp))
+#define WORD1(dwTemp)       (*((int16_t *)(&dwTemp) + 1))
+
+#define Set_Bit(Bety,n)  ((Bety)|= (1<<(n)))
+#define Clr_Bit(Bety,n)  ((Bety)&=!(1<<(n)))
+#define Read_Bit(Bety,n) (((Bety)>>(n))&(1))
+
 //#define false FALSE
 //#define true TRUE
 //#define bool BOOL

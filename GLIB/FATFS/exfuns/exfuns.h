@@ -1,6 +1,6 @@
 #ifndef __EXFUNS_H
 #define __EXFUNS_H 	
-#include "ff.h"
+#include "../src/ff.h"
 #include "sys.h"
 
 

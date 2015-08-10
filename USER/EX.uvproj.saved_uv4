@@ -74,9 +74,9 @@
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>"E:\WORK\Contest\WPG i-Design Contest\STM32F1\USER0_DLD\svnsub.bat"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -171,7 +171,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -206,7 +206,7 @@
             <AdsLven>1</AdsLven>
             <AdsLsxf>1</AdsLsxf>
             <RvctClst>0</RvctClst>
-            <GenPPlst>0</GenPPlst>
+            <GenPPlst>1</GenPPlst>
             <AdsCpuType>"Cortex-M4"</AdsCpuType>
             <RvctDeviceName></RvctDeviceName>
             <mOS>0</mOS>
@@ -355,13 +355,13 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <useXO>0</useXO>
             <VariousControls>
-              <MiscControls>--c99</MiscControls>
-              <Define>USE_STDPERIPH_DRIVER STM32F4XX</Define>
+              <MiscControls></MiscControls>
+              <Define>USE_STDPERIPH_DRIVER,STM32F4XX,ARM_MATH_CM4, __FPU_PRESENT=1, __FPU_USED =1, __CC_ARM,__TARGET_FPU_VFP</Define>
               <Undefine></Undefine>
-              <IncludePath>..\GLIB\Libraries\CMSIS\Include;..\GLIB\Libraries\CMSIS\ST\STM32F4xx\Include;..\GLIB\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\GLIB\HARDWARE;..\GLIB\SYSTEM;.\USER;..\GLIB\PERIPHERAL\LCD;.\USER\CONFIG;..\GLIB\PERIPHERAL\CAMERA</IncludePath>
+              <IncludePath>..\GLIB\Libraries\CMSIS\Include;..\GLIB\Libraries\CMSIS\ST\STM32F4xx\Include;..\GLIB\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\GLIB\HARDWARE;..\GLIB\SYSTEM;.\USER;..\GLIB\PERIPHERAL\LCD;.\USER\CONFIG;..\GLIB\PERIPHERAL\CAMERA;.\USER\APP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -402,6 +402,16 @@
       </TargetOption>
       <Groups>
         <Group>
+          <GroupName>TMP</GroupName>
+          <Files>
+            <File>
+              <FileName>tmp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\tmp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>USER</GroupName>
           <Files>
             <File>
@@ -420,9 +430,9 @@
               <FilePath>.\USER\stm32f4xx_it.c</FilePath>
             </File>
             <File>
-              <FileName>system_stm32f4xx.c</FileName>
+              <FileName>User_Task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\USER\system_stm32f4xx.c</FilePath>
+              <FilePath>.\USER\APP\User_Task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -449,6 +459,11 @@
               <FileType>1</FileType>
               <FilePath>..\GLIB\SYSTEM\minos_delay.c</FilePath>
             </File>
+            <File>
+              <FileName>sys_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\SYSTEM\sys_usart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -458,6 +473,11 @@
               <FileName>gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\GLIB\HARDWARE\gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\HARDWARE\spi.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -484,15 +504,30 @@
               <FileType>1</FileType>
               <FilePath>..\GLIB\PERIPHERAL\LCD\LCD.c</FilePath>
             </File>
+            <File>
+              <FileName>G32_Nrf24l01.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\PERIPHERAL\NRF24L01\G32_Nrf24l01.C</FilePath>
+            </File>
+            <File>
+              <FileName>sdio_sdcard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\PERIPHERAL\SD\sdio_sdcard.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>CORE</GroupName>
+          <GroupName>APP</GroupName>
           <Files>
             <File>
-              <FileName>startup_stm32f4xx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\GLIB\Libraries\CMSIS\ST\STM32F4xx\Source\Templates\arm\startup_stm32f4xx.s</FilePath>
+              <FileName>EasyTracer2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\APP\EasyTracer2.c</FilePath>
+            </File>
+            <File>
+              <FileName>data_transfer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\APP\data_transfer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -653,6 +688,44 @@
               <FileName>stm32f4xx_wwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\GLIB\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>CORE</GroupName>
+          <Files>
+            <File>
+              <FileName>system_stm32f4xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\system_stm32f4xx.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup_stm32f4xx.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\GLIB\Libraries\CMSIS\ST\STM32F4xx\Source\Templates\arm\startup_stm32f4xx.s</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DSP</GroupName>
+        </Group>
+        <Group>
+          <GroupName>FATFS</GroupName>
+          <Files>
+            <File>
+              <FileName>exfuns.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\FATFS\exfuns\exfuns.c</FilePath>
+            </File>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\FATFS\src\diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\GLIB\FATFS\src\ff.c</FilePath>
             </File>
           </Files>
         </Group>

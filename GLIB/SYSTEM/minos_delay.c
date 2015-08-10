@@ -1,7 +1,9 @@
 #include "minos_delay.h"
 #include "sys_os.h"
 #include "sys.h"
-
+/*
+//int time;//time=SysTick_Clock();//printf("\r\n%d",SysTick_Clock()-time);
+*/
 /////////////////////////////////////////////////////////////////////////////////////
 static u8  fac_us = 0; //us延时倍乘数
 
@@ -14,8 +16,8 @@ void delay_init()
 #ifdef OS_CRITICAL_METHOD   //如果OS_CRITICAL_METHOD定义了,说明使用ucosII了.
     u32 reload;//重装载值
 #endif
-    SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);   //选择外部时钟  HCLK/8
-    fac_us = SystemCoreClock / 8000000; //为系统时钟的1/8
+    SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);   //选择外部时钟  HCLK/8//为系统时钟的1/8
+    fac_us = SystemCoreClock / 8000000; 
 
 #ifdef OS_CRITICAL_METHOD   //如果OS_CRITICAL_METHOD定义了,说明使用ucosII了.
     reload = SystemCoreClock / 8000000; //每秒钟的计数次数 单位为K
@@ -64,10 +66,10 @@ void delay_ms(u16 nms)
 extern u32 SysTick_Time;
 int SysTick_Clock(void)
 {
-    return (((SysTick_Time + 1) * SysTick->LOAD) - SysTick->VAL) / (8000 / OS_TICKS_PER_SEC);
+    return (((SysTick_Time + 1) * SysTick->LOAD) - SysTick->VAL) / (fac_us*1000 / OS_TICKS_PER_SEC);
 }
 
-#else//不用ucos时
+#else //不用ucos时
 //延时nus
 //nus为要延时的us数.
 void delay_us(u32 nus)

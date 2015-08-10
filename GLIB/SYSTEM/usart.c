@@ -55,72 +55,6 @@ u8 RxCounter5 = 0;
 u8 RxBuffer6[100] = {"6ce shi "};
 u8 RxCounter6 = 0;
 #endif
-#define BYTE0(dwTemp)       (*(char *)(&dwTemp))
-#define BYTE1(dwTemp)       (*((char *)(&dwTemp) + 1))
-#define BYTE2(dwTemp)       (*((char *)(&dwTemp) + 2))
-#define BYTE3(dwTemp)       (*((char *)(&dwTemp) + 3))
-
-u8 TxBuffer[0xff];
-u8 TxCounter = 0;
-u8 count = 0;
-u8 Rx_Buf[2][32];   //两个32字节的串口接收缓存
-u8 Rx_Act = 0;      //正在使用的buf号
-u8 Rx_Adr = 0;      //正在接收第几字节
-u8 Rx_Ok0 = 0;
-u8 Rx_Ok1 = 0;
-
-void Uart1_IRQ(void)
-{
-    if (USART1->SR & USART_SR_ORE) //ORE中断
-    {
-        u8 com_data = USART1->DR;
-        //USART_ClearFlag(USART1,USART_IT_ORE);
-    }
-    //发送中断
-    if ((USART1->SR & (1 << 7)) && (USART1->CR1 & USART_CR1_TXEIE))
-        //if(USART_GetITStatus(USART1,USART_IT_TXE)!=RESET)
-    {
-        USART1->DR = TxBuffer[TxCounter++]; //写DR清除中断标志
-        if (TxCounter == count)
-        {
-            USART1->CR1 &= ~USART_CR1_TXEIE;        //关闭TXE中断
-            //USART_ITConfig(USART1,USART_IT_TXE,DISABLE);
-        }
-    }
-    //接收中断 (接收寄存器非空)
-    if (USART1->SR & (1 << 5))
-        //if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-    {
-        u8 com_data = USART1->DR;
-        if (Rx_Adr == 0)    //寻找帧头0X8A
-        {
-            if (com_data == 0x8A) //接收数据如果是0X8A,则写入缓存
-            {
-                Rx_Buf[Rx_Act][0] = com_data;
-                Rx_Adr = 1;
-            }
-        }
-        else        //正在接收数据
-        {
-            Rx_Buf[Rx_Act][Rx_Adr] = com_data;
-            Rx_Adr ++;
-        }
-        if (Rx_Adr == 32)   //数据接收完毕
-        {
-            Rx_Adr = 0;
-            if (Rx_Act)
-            {
-                Rx_Act = 0;             //切换缓存
-                Rx_Ok1 = 1;
-            }
-            else
-            {
-                Rx_Act = 1;
-                Rx_Ok0 = 1;
-            }
-        }
-    }
-}
 
 #if EN_USART1_
 void USART1_Configuration(u32 BaudRate)
@@ -528,10 +462,10 @@ void myusart1(void)
             USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
     }
 }
-void WTH_USART1_IRQHandler(void)
-{
-    Uart1_IRQ();
-}
+//void WTH_USART1_IRQHandler(void)
+//{
+//    Uart1_IRQ();
+//}
 #endif
 #if EN_USART2_
 void WTH_USART2_IRQHandler(void)
@@ -597,39 +531,3 @@ void USART6_IRQHandler(void)
     }
 }
 #endif
-
-//#pragma import(__use_no_semihosting)
-//struct __FILE
-//{
-//  int handle;
-//};
-//FILE __stdout;
-//_sys_exit(int x)
-//{
-//  x = x;
-//}
-int fputc(int ch, FILE *f)
-{
-    USART_SendData(Printf_USART, (u8) ch);
-    while (USART_GetFlagStatus(Printf_USART, USART_FLAG_TC) == RESET);
-    return ch;
-}
-
-uint8_t Uart1_Put_Char(unsigned char DataToSend)
-{
-    TxBuffer[count++] = DataToSend;
-    if (!(USART1->CR1 & USART_CR1_TXEIE))
-        USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
-    return DataToSend;
-}
-uint8_t Uart1_Put_Int16(uint16_t DataToSend)
-{
-    uint8_t sum = 0;
-    TxBuffer[count++] = BYTE1(DataToSend);
-    TxBuffer[count++] = BYTE0(DataToSend);
-    if (!(USART1->CR1 & USART_CR1_TXEIE))
-        USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
-    sum += BYTE1(DataToSend);
-    sum += BYTE0(DataToSend);
-    return sum;
-}

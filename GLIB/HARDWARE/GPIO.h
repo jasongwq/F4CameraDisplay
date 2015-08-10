@@ -644,7 +644,7 @@ void My_GPIO_Init(GPIO_TypeDef* GPIOx,u16 pin,u8 mode);
 #define	Clr_I(n) GPIOI->BSRRH=1<<n;
 
 ////////////////////////////////////////////
-// ¿ìËÙ¶È IO
+// å¿«é€Ÿåº¦ IO
 #define A0       ((GPIOA->IDR&(1<<0))?1:0)
 #define A1       ((GPIOA->IDR&(1<<1))?1:0)
 #define A2       ((GPIOA->IDR&(1<<2))?1:0)

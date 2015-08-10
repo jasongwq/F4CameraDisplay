@@ -10,21 +10,21 @@ void FSMC_LCD_Init(void)
 
     RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FSMC, ENABLE);
 
-    readWriteTiming.FSMC_AddressSetupTime = 4;//0x01;          //µØÖ·½¨Á¢Ê±¼ä£¨ADDSET£©Îª2¸öHCLK 1/36M=27ns
-    readWriteTiming.FSMC_AddressHoldTime = 0x00;           //µØÖ·±£³ÖÊ±¼ä£¨ADDHLD£©Ä£Ê½AÎ´ÓÃµ½
-    readWriteTiming.FSMC_DataSetupTime = 0x0f;             // Êı¾İ±£´æÊ±¼äÎª16¸öHCLK,ÒòÎªÒº¾§Çı¶¯ICµÄ¶ÁÊı¾İµÄÊ±ºò£¬ËÙ¶È²»ÄÜÌ«¿ì£¬ÓÈÆä¶Ô1289Õâ¸öIC¡£
+    readWriteTiming.FSMC_AddressSetupTime = 4;//0x01;          //åœ°å€å»ºç«‹æ—¶é—´ï¼ˆADDSETï¼‰ä¸º2ä¸ªHCLK 1/36M=27ns
+    readWriteTiming.FSMC_AddressHoldTime = 0x00;           //åœ°å€ä¿æŒæ—¶é—´ï¼ˆADDHLDï¼‰æ¨¡å¼Aæœªç”¨åˆ°
+    readWriteTiming.FSMC_DataSetupTime = 0x0f;             // æ•°æ®ä¿å­˜æ—¶é—´ä¸º16ä¸ªHCLK,å› ä¸ºæ¶²æ™¶é©±åŠ¨ICçš„è¯»æ•°æ®çš„æ—¶å€™ï¼Œé€Ÿåº¦ä¸èƒ½å¤ªå¿«ï¼Œå°¤å…¶å¯¹1289è¿™ä¸ªICã€‚
     readWriteTiming.FSMC_BusTurnAroundDuration = 0x00;
     readWriteTiming.FSMC_CLKDivision = 0x00;
     readWriteTiming.FSMC_DataLatency = 0x00;
-    readWriteTiming.FSMC_AccessMode = FSMC_AccessMode_A; //Ä£Ê½A
+    readWriteTiming.FSMC_AccessMode = FSMC_AccessMode_A; //æ¨¡å¼A
 
-    writeTiming.FSMC_AddressSetupTime = 4;             //µØÖ·½¨Á¢Ê±¼ä£¨ADDSET£©Îª1¸öHCLK
-    writeTiming.FSMC_AddressHoldTime = 0x00;               //µØÖ·±£³ÖÊ±¼ä£¨A
-    writeTiming.FSMC_DataSetupTime = 0x08;                 //Êı¾İ±£´æÊ±¼äÎª4¸öHCLK
+    writeTiming.FSMC_AddressSetupTime = 4;             //åœ°å€å»ºç«‹æ—¶é—´ï¼ˆADDSETï¼‰ä¸º1ä¸ªHCLK
+    writeTiming.FSMC_AddressHoldTime = 0x00;               //åœ°å€ä¿æŒæ—¶é—´ï¼ˆA
+    writeTiming.FSMC_DataSetupTime = 0x08;                 //æ•°æ®ä¿å­˜æ—¶é—´ä¸º4ä¸ªHCLK
     writeTiming.FSMC_BusTurnAroundDuration = 0x00;
     writeTiming.FSMC_CLKDivision = 0x00;
     writeTiming.FSMC_DataLatency = 0x00;
-    writeTiming.FSMC_AccessMode = FSMC_AccessMode_A;       //Ä£Ê½A
+    writeTiming.FSMC_AccessMode = FSMC_AccessMode_A;       //æ¨¡å¼A
     //
 #if CS_USE==1              // PD7
     FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM1;
@@ -35,9 +35,9 @@ void FSMC_LCD_Init(void)
 #elif CS_USE==4            // PG12
     FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM4;
 #endif
-    FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;// ²»¸´ÓÃÊı¾İµØÖ·
+    FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;// ä¸å¤ç”¨æ•°æ®åœ°å€
     FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_SRAM;// FSMC_MemoryType_SRAM;  //SRAM
-    FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;//´æ´¢Æ÷Êı¾İ¿í¶ÈÎª16bit
+    FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;//å­˜å‚¨å™¨æ•°æ®å®½åº¦ä¸º16bit
     FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable;
 
     FSMC_NORSRAMInitStructure.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;//f4
@@ -45,9 +45,9 @@ void FSMC_LCD_Init(void)
     FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low;
     FSMC_NORSRAMInitStructure.FSMC_WrapMode = FSMC_WrapMode_Disable;
     FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive = FSMC_WaitSignalActive_BeforeWaitState;
-    FSMC_NORSRAMInitStructure.FSMC_WriteOperation = FSMC_WriteOperation_Enable;//  ´æ´¢Æ÷Ğ´Ê¹ÄÜ
+    FSMC_NORSRAMInitStructure.FSMC_WriteOperation = FSMC_WriteOperation_Enable;//  å­˜å‚¨å™¨å†™ä½¿èƒ½
     FSMC_NORSRAMInitStructure.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
-    FSMC_NORSRAMInitStructure.FSMC_ExtendedMode = FSMC_ExtendedMode_Enable; // ¶ÁĞ´Ê¹ÓÃ²»Í¬µÄÊ±Ğò
+    FSMC_NORSRAMInitStructure.FSMC_ExtendedMode = FSMC_ExtendedMode_Enable; // è¯»å†™ä½¿ç”¨ä¸åŒçš„æ—¶åº
     FSMC_NORSRAMInitStructure.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
     FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct = &readWriteTiming;
     FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &writeTiming;
@@ -64,7 +64,7 @@ void FSMC_LCD_Init(void)
     FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM4, ENABLE);
 #endif
 
-		
+
     FSMC_RS_CS_Init();
     Fsmc_D_16_Init();
 }
@@ -75,7 +75,7 @@ void Fsmc_D_16_Init(void)
     //  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE , ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE,   ENABLE);
 
-    //PORTD¸´ÓÃÍÆÍìÊä³ö
+    //PORTDå¤ç”¨æ¨æŒ½è¾“å‡º
     /* GPIOD configuration */
     GPIO_PinAFConfig(GPIOD, GPIO_PinSource0, GPIO_AF_FSMC);//D2
     GPIO_PinAFConfig(GPIOD, GPIO_PinSource1, GPIO_AF_FSMC);//D3
@@ -118,7 +118,7 @@ void Fsmc_D_16_Init(void)
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 ;                               // NOE NWE
     GPIO_Init(GPIOD, &GPIO_InitStructure);
-    //DÉÙ 7 11
+    //Då°‘ 7 11
 }
 void Fsmc_D_8_Init(void)
 {

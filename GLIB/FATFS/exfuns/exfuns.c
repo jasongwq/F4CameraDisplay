@@ -1,70 +1,85 @@
 #include "string.h"
-#include "exfuns.h"
+#include "./exfuns.h"
 //#include "fattester.h"
+#ifdef SYS_MEMMALLOC_ENABLE_
 #include "malloc.h"
+#endif
 #include "usart.h"
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-//ÎÄ¼şÀàĞÍÁĞ±í
+//æ–‡ä»¶ç±»å‹åˆ—è¡¨
 const u8* FILE_TYPE_TBL[6][13] =
 {
-    {"BIN"},            //BINÎÄ¼ş
-    {"LRC"},            //LRCÎÄ¼ş
-    {"NES"},            //NESÎÄ¼ş
-    {"TXT", "C", "H"},  //ÎÄ±¾ÎÄ¼ş
-    {"MP1", "MP2", "MP3", "MP4", "M4A", "3GP", "3G2", "OGG", "ACC", "WMA", "WAV", "MID", "FLAC"}, //ÒôÀÖÎÄ¼ş
-    {"BMP", "JPG", "JPEG", "GIF"}, //Í¼Æ¬ÎÄ¼ş
+    {"BIN"},            //BINæ–‡ä»¶
+    {"LRC"},            //LRCæ–‡ä»¶
+    {"NES"},            //NESæ–‡ä»¶
+    {"TXT", "C", "H"},  //æ–‡æœ¬æ–‡ä»¶
+    {"MP1", "MP2", "MP3", "MP4", "M4A", "3GP", "3G2", "OGG", "ACC", "WMA", "WAV", "MID", "FLAC"}, //éŸ³ä¹æ–‡ä»¶
+    {"BMP", "JPG", "JPEG", "GIF"}, //å›¾ç‰‡æ–‡ä»¶
 };
-///////////////////////////////¹«¹²ÎÄ¼şÇø,Ê¹ÓÃmallocµÄÊ±ºò////////////////////////////////////////////
-FATFS* fxs[1];      //Âß¼­´ÅÅÌ¹¤×÷Çø.
-FIL* file;          //ÎÄ¼ş1
-FIL* ftemp;         //ÎÄ¼ş2
-UINT br, bxw;        //¶ÁĞ´±äÁ¿
-FILINFO fileinfo;   //ÎÄ¼şĞÅÏ¢
-DIR dir;            //Ä¿Â¼
+///////////////////////////////å…¬å…±æ–‡ä»¶åŒº,ä½¿ç”¨mallocçš„æ—¶å€™////////////////////////////////////////////
+FATFS* fxs[1];      //é€»è¾‘ç£ç›˜å·¥ä½œåŒº.
+FIL* file;          //æ–‡ä»¶1
+FIL* ftemp;         //æ–‡ä»¶2
+UINT br, bxw;        //è¯»å†™å˜é‡
+FILINFO fileinfo;   //æ–‡ä»¶ä¿¡æ¯
+DIR dir;            //ç›®å½•
 
-u8* fatbuf;         //SD¿¨Êı¾İ»º´æÇø
+u8* fatbuf;         //SDå¡æ•°æ®ç¼“å­˜åŒº
 ///////////////////////////////////////////////////////////////////////////////////////
-//ÎªexfunsÉêÇëÄÚ´æ
-//·µ»ØÖµ:0,³É¹¦
-//1,Ê§°Ü
+//ä¸ºexfunsç”³è¯·å†…å­˜
+//è¿”å›å€¼:0,æˆåŠŸ
+//1,å¤±è´¥
 u8 exfuns_init(void)
 {
-    fxs[0] = (FATFS*)mymalloc(SRAMIN, sizeof(FATFS));  //Îª´ÅÅÌ0¹¤×÷ÇøÉêÇëÄÚ´æ
-    //fs[1] = (FATFS *)mymalloc(SRAMIN, sizeof(FATFS)); //Îª´ÅÅÌ1¹¤×÷ÇøÉêÇëÄÚ´æ
-    file = (FIL*)mymalloc(SRAMIN, sizeof(FIL));     //ÎªfileÉêÇëÄÚ´æ
-    ftemp = (FIL*)mymalloc(SRAMIN, sizeof(FIL));    //ÎªftempÉêÇëÄÚ´æ
-    fatbuf = (u8*)mymalloc(SRAMIN, 512);            //ÎªfatbufÉêÇëÄÚ´æ
-    //    if (fs[0] && fs[1] && file && ftemp && fatbuf)return 0; //ÉêÇëÓĞÒ»¸öÊ§°Ü,¼´Ê§°Ü.
-    if (fxs[0] && file && ftemp && fatbuf)return 0; //ÉêÇëÓĞÒ»¸öÊ§°Ü,¼´Ê§°Ü.
+	#ifdef SYS_MEMMALLOC_ENABLE_
+    fxs[0] = (FATFS*)mymalloc(SRAMIN, sizeof(FATFS));  //ä¸ºç£ç›˜0å·¥ä½œåŒºç”³è¯·å†…å­˜
+    //fs[1] = (FATFS *)mymalloc(SRAMIN, sizeof(FATFS)); //ä¸ºç£ç›˜1å·¥ä½œåŒºç”³è¯·å†…å­˜
+    file  = (FIL*)mymalloc(SRAMIN, sizeof(FIL));     //ä¸ºfileç”³è¯·å†…å­˜
+    ftemp = (FIL*)mymalloc(SRAMIN, sizeof(FIL));    //ä¸ºftempç”³è¯·å†…å­˜
+    fatbuf = (u8*)mymalloc(SRAMIN, 512);            //ä¸ºfatbufç”³è¯·å†…å­˜
+    //    if (fs[0] && fs[1] && file && ftemp && fatbuf)return 0; //ç”³è¯·æœ‰ä¸€ä¸ªå¤±è´¥,å³å¤±è´¥.
+    if (fxs[0] && file && ftemp && fatbuf)return 0; //ç”³è¯·æœ‰ä¸€ä¸ªå¤±è´¥,å³å¤±è´¥.
     else return 1;
+	#else
+	static FATFS stafxs[1];
+	static FIL stafile;
+	static FIL staftemp;
+	static u8 stafatbuf[512];
+	fxs[0] =&stafxs[0];
+	file = & stafile;
+	ftemp = & staftemp;
+	fatbuf =stafatbuf;
+	return 0;
+	#endif
+	
 }
 
-//½«Ğ¡Ğ´×ÖÄ¸×ªÎª´óĞ´×ÖÄ¸,Èç¹ûÊÇÊı×Ö,Ôò±£³Ö²»±ä.
+//å°†å°å†™å­—æ¯è½¬ä¸ºå¤§å†™å­—æ¯,å¦‚æœæ˜¯æ•°å­—,åˆ™ä¿æŒä¸å˜.
 u8 char_upper(u8 c)
 {
-    if (c < 'A')return c; //Êı×Ö,±£³Ö²»±ä.
-    if (c >= 'a')return c - 0x20; //±äÎª´óĞ´.
-    else return c;//´óĞ´,±£³Ö²»±ä
+    if (c < 'A')return c; //æ•°å­—,ä¿æŒä¸å˜.
+    if (c >= 'a')return c - 0x20; //å˜ä¸ºå¤§å†™.
+    else return c;//å¤§å†™,ä¿æŒä¸å˜
 }
-//±¨¸æÎÄ¼şµÄÀàĞÍ
-//fname:ÎÄ¼şÃû
-//·µ»ØÖµ:0XFF,±íÊ¾ÎŞ·¨Ê¶±ğµÄÎÄ¼şÀàĞÍ±àºÅ.
-//       ÆäËû,¸ßËÄÎ»±íÊ¾ËùÊô´óÀà,µÍËÄÎ»±íÊ¾ËùÊôĞ¡Àà.
+//æŠ¥å‘Šæ–‡ä»¶çš„ç±»å‹
+//fname:æ–‡ä»¶å
+//è¿”å›å€¼:0XFF,è¡¨ç¤ºæ— æ³•è¯†åˆ«çš„æ–‡ä»¶ç±»å‹ç¼–å·.
+//       å…¶ä»–,é«˜å››ä½è¡¨ç¤ºæ‰€å±å¤§ç±»,ä½å››ä½è¡¨ç¤ºæ‰€å±å°ç±».
 u8 f_typetell(char * fname)
 {
     char tbuf[5];
-    char* attr = '\0'; //ºó×ºÃû
+    char* attr = '\0'; //åç¼€å
     u8 i = 0, j;
     while (i < 250)
     {
         i++;
-        if (*fname == '\0')break; //Æ«ÒÆµ½ÁË×îºóÁË.
+        if (*fname == '\0')break; //åç§»åˆ°äº†æœ€åäº†.
         fname++;
     }
-    if (i == 250)return 0XFF; //´íÎóµÄ×Ö·û´®.
-    for (i = 0; i < 5; i++) //µÃµ½ºó×ºÃû
+    if (i == 250)return 0XFF; //é”™è¯¯çš„å­—ç¬¦ä¸².
+    for (i = 0; i < 5; i++) //å¾—åˆ°åç¼€å
     {
         fname--;
         if (*fname == '.')
@@ -75,43 +90,43 @@ u8 f_typetell(char * fname)
         }
     }
     strcpy((char*)tbuf, (const char*)attr);   //copy
-    for (i = 0; i < 4; i++)tbuf[i] = char_upper(tbuf[i]); //È«²¿±äÎª´óĞ´
+    for (i = 0; i < 4; i++)tbuf[i] = char_upper(tbuf[i]); //å…¨éƒ¨å˜ä¸ºå¤§å†™
     for (i = 0; i < 6; i++)
     {
         for (j = 0; j < 13; j++)
         {
-            if (*FILE_TYPE_TBL[i][j] == 0)break; //´Ë×éÒÑ¾­Ã»ÓĞ¿É¶Ô±ÈµÄ³ÉÔ±ÁË.
-            if (strcmp((const char*)FILE_TYPE_TBL[i][j], (const char*)tbuf) == 0)   //ÕÒµ½ÁË
+            if (*FILE_TYPE_TBL[i][j] == 0)break; //æ­¤ç»„å·²ç»æ²¡æœ‰å¯å¯¹æ¯”çš„æˆå‘˜äº†.
+            if (strcmp((const char*)FILE_TYPE_TBL[i][j], (const char*)tbuf) == 0)   //æ‰¾åˆ°äº†
             {
                 return (i << 4) | j;
             }
         }
     }
-    return 0XFF;//Ã»ÕÒµ½
+    return 0XFF;//æ²¡æ‰¾åˆ°
 }
 
-//µÃµ½´ÅÅÌÊ£ÓàÈİÁ¿
-//drv:´ÅÅÌ±àºÅ("0:"/"1:")
-//total:×ÜÈİÁ¿    £¨µ¥Î»KB£©
-//free:Ê£ÓàÈİÁ¿  £¨µ¥Î»KB£©
-//·µ»ØÖµ:0,Õı³£.ÆäËû,´íÎó´úÂë
+//å¾—åˆ°ç£ç›˜å‰©ä½™å®¹é‡
+//drv:ç£ç›˜ç¼–å·("0:"/"1:")
+//total:æ€»å®¹é‡    ï¼ˆå•ä½KBï¼‰
+//free:å‰©ä½™å®¹é‡  ï¼ˆå•ä½KBï¼‰
+//è¿”å›å€¼:0,æ­£å¸¸.å…¶ä»–,é”™è¯¯ä»£ç 
 u8 exf_getfree(u8* drv, u32* total, u32* free)
 {
     FATFS* fs1;
     u8 res;
     DWORD fre_clust = 0, fre_sect = 0, tot_sect = 0;
-    //µÃµ½´ÅÅÌĞÅÏ¢¼°¿ÕÏĞ´ØÊıÁ¿
+    //å¾—åˆ°ç£ç›˜ä¿¡æ¯åŠç©ºé—²ç°‡æ•°é‡
     res = f_getfree((const TCHAR*)drv, &fre_clust, &fs1);
     if (res == 0)
     {
-        tot_sect = (fs1->n_fatent - 2) * fs1->csize; //µÃµ½×ÜÉÈÇøÊı
-        fre_sect = fre_clust * fs1->csize;      //µÃµ½¿ÕÏĞÉÈÇøÊı
-#if _MAX_SS!=512                                //ÉÈÇø´óĞ¡²»ÊÇ512×Ö½Ú,Ôò×ª»»Îª512×Ö½Ú
+        tot_sect = (fs1->n_fatent - 2) * fs1->csize; //å¾—åˆ°æ€»æ‰‡åŒºæ•°
+        fre_sect = fre_clust * fs1->csize;      //å¾—åˆ°ç©ºé—²æ‰‡åŒºæ•°
+#if _MAX_SS!=512                                //æ‰‡åŒºå¤§å°ä¸æ˜¯512å­—èŠ‚,åˆ™è½¬æ¢ä¸º512å­—èŠ‚
         tot_sect *= fs1->ssize / 512;
         fre_sect *= fs1->ssize / 512;
 #endif
-        *total = tot_sect >> 1; //µ¥Î»ÎªKB
-        *free = fre_sect >> 1; //µ¥Î»ÎªKB
+        *total = tot_sect >> 1; //å•ä½ä¸ºKB
+        *free = fre_sect >> 1; //å•ä½ä¸ºKB
     }
     return res;
 }

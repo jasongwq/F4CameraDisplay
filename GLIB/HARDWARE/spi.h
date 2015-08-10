@@ -1,37 +1,147 @@
 #ifndef __SPI_H
 #define __SPI_H
 #include "sys.h"
-//////////////////////////////////////////////////////////////////////////////////	 
-/**************************
-REMAP     |  0    |  1    |                                  
-SPI1_NSS  |  PA4  |  PA15 |                                             
-SPI1_SCK  |  PA5  |  PB3  |                                                  
-SPI1_MISO |  PA6  |  PB4  |                                               
-SPI1_MOSI |  PA7  |  PB5  |                                        
-**************************|
-SPI2_NSS  |  PB12 |       |                                      
-SPI2_SCK  |  PB13 |       |                                            
-SPI2_MISO |  PB14 |       |                                            
-SPI2_MOSI |  PB15 |       |                                       
-**************************/
-/*********(ª•¡™–Õ)********|
-SPI3_NSS  |  PA15 |  PA4  |                                             
-SPI3_SCK  |  PB3  |  PC10 |                                                   
-SPI3_MISO |  PB3  |  PC11 |                                                   
-SPI3_MOSI |  PB3  |  PC12 |
-*********(ª•¡™–Õ)*********/
-//2013/7/24
-/*************************/						  
+#include "GPIO.h"
+/****************************************/
+/***STM32F103vct6***/
+/********************************************
+***********************************************\
+ * REMAP     |  0    |  1     *
+ * SPI1_NSS  |  PA4  |  PA15  *
+ * SPI1_SCK  |  PA5  |  PB3   *
+ * SPI1_MISO |  PA6  |  PB4   *
+ * SPI1_MOSI |  PA7  |  PB5   *
+ * ************************** *
+ * SPI2_NSS  |  PB12 |        *
+ * SPI2_SCK  |  PB13 |        *
+ * SPI2_MISO |  PB14 |        *
+ * SPI2_MOSI |  PB15 |        *
+ * ************************** *
+ * **********(‰∫íËÅîÂûã)******** *
+ * SPI3_NSS  |  PA15 |  PA4   *
+ * SPI3_SCK  |  PB3  |  PC10  *
+ * SPI3_MISO |  PB4  |  PC11  *
+ * SPI3_MOSI |  PB5  |  PC12  *
+ * *********(‰∫íËÅîÂûã)********* *
+\**********************************************/
+/****************************************/
+/***STM32F407***/
+/********************************************
+***********************************************\
+ * REMAP     |  0    |  1    |  3     *
+ * SPI1_NSS  |  PA4  |  PA15 |        *
+ * SPI1_SCK  |  PA5  |  PB3  |        *
+ * SPI1_MISO |  PA6  |  PB4  |        *
+ * SPI1_MOSI |  PA7  |  PB5  |        *
+ * ********************************** *
+ * SPI2_NSS  |  PB12 |       |        *
+ * SPI2_SCK  |  PB13 |  PB10 |  PI1   *
+ * SPI2_MISO |  PB14 |  PC2  |  PI2   *
+ * SPI2_MOSI |  PB15 |  PC3  |  PI3   *
+ * ********************************** *
+ * **********(‰∫íËÅîÂûã)**************** *
+ * SPI3_NSS  |  PA15 |  PA4  |        *
+ * SPI3_SCK  |  PB3  |  PC10 |        *
+ * SPI3_MISO |  PB4  |  PC11 |        *
+ * SPI3_MOSI |  PB5  |  PC12 |        *
+ * *********(‰∫íËÅîÂûã)***************** *
+\**********************************************/
+
+/********************************************
+***********************************************\
+ * 2014/7/19 Êç¢Áî® wthÂ≠¶ÈïøÁ®ãÂ∫è Â¢ûÂä†F407ÁöÑÊîØÊåÅ
+ * 2013/7/24
+ * 2013/7/26
+\**********************************************/
 //////////////////////////////////////////////////////////////////////////////////
+#define EN_SPI0_ (1) //Enable(1)/Disable(0)//SPI_SOFT
+#define EN_SPI1_ (0) //Enable(1)/Disable(0)
+#define EN_SPI2_ (0) //Enable(1)/Disable(0)
+#define EN_SPI3_ (0) //Enable(1)/Disable(0)
+#define SPI1_AFIO (0)
+#define SPI2_AFIO (0)
+#define SPI3_AFIO (0)
 
- 				  	    													  
-void SPI1_Init(void);			 //≥ı ºªØSPIxø⁄
-void SPI1_SetSpeed(u8 SpeedSet); //…Ë÷√SPIxÀŸ∂»   
-u8   SPI1_ReadWriteByte(u8 TxData);//SPIx◊‹œﬂ∂¡–¥“ª∏ˆ◊÷Ω⁄
+#if EN_SPI0_==1
+/********************  ËΩØ‰ª∂SPI  ***************************************/
+#define SPI0_SCK_Init   PA0_OUT
+#define Set_SPI0_SCK    Set_A0
+#define Clr_SPI0_SCK    Clr_A0
+#define SPI0_MISO_Init  PC2_In
+#define MISO_SPI0       C2
+#define SPI0_MOSI_Init  PC3_OUT
+#define Set_SPI0_MOSI   Set_C3
+#define Clr_SPI0_MOSI   Clr_C3
+/********************  Á°¨‰ª∂SPI  ***************************************/
+#endif
+#if EN_SPI1_==1
+/*   SPI 1   */
+#if SPI1_AFIO==0
+#define SPI_1_SCK_PA5
+#define SPI_1_MISO_PA6
+#define SPI_1_MOSI_PA7
+#elif SPI1_AFIO==1
+#define SPI_1_SCK_PB3
+#define SPI_1_MISO_PB4
+#define SPI_1_MOSI_PB5
+#else
+#error SPI1_AFIO Error
+#endif
+#endif
+#if EN_SPI2_==1
+/*   SPI 2   */
+#if SPI2_AFIO==3
+#define SPI_2_SCK_PI1
+#define SPI_2_MISO_PI2
+#define SPI_2_MOSI_PI3
+#elif SPI2_AFIO==0
+#define SPI_2_SCK_PB13
+#define SPI_2_MISO_PB14
+#define SPI_2_MOSI_PB15
+#elif SPI2_AFIO==1
+#define SPI_2_SCK_PB10
+#define SPI_2_MISO_PC2
+#define SPI_2_MOSI_PC3
+#else
+#error SPI2_AFIO Error
+#endif
+#endif
+#if EN_SPI3_==1
+/*   SPI 3   */
+#if SPI3_AFIO==0
+#define SPI_3_SCK_PB3
+#define SPI_3_MISO_PB4
+#define SPI_3_MOSI_PB5
+#elif SPI3_AFIO==1
+#define SPI_3_SCK_PC10
+#define SPI_3_MISO_PC11
+#define SPI_3_MOSI_PC12
+#else
+#error SPI3_AFIO Error
+#endif
+#endif
 
-void SPI2_Init(void);			 //≥ı ºªØSPIxø⁄
-void SPI2_SetSpeed(u8 SpeedSet); //…Ë÷√SPIxÀŸ∂»   
-u8   SPI2_ReadWriteByte(u8 TxData);//SPIx◊‹œﬂ∂¡–¥“ª∏ˆ◊÷Ω⁄
-		 
+
+#if EN_SPI0_==1
+void SPI0_Init(void);
+u8   SPI0_ReadWriteByte(u8 TxData);
+#endif
+#if EN_SPI1_==1
+void SPI1_Init(void);            //ÂàùÂßãÂåñSPIÂè£
+void SPI1_SetSpeed(u16 SPI_BaudRatePrescaler);
+u8   SPI1_ReadWriteByte(u8 TxData);//SPIÊÄªÁ∫øËØªÂÜô‰∏Ä‰∏™Â≠óËäÇ
+#endif
+#if EN_SPI2_==1
+void SPI2_Init(void);
+void SPI2_SetSpeed(u16 SPI_BaudRatePrescaler);
+u8   SPI2_ReadWriteByte(u8 TxData);
+#endif
+#if EN_SPI3_==1
+void SPI3_Init(void);
+void SPI3_SetSpeed(u16 SPI_BaudRatePrescaler);
+u8   SPI3_ReadWriteByte(u8 TxData);
+#endif
+
+
 #endif
 

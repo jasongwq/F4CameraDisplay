@@ -36,7 +36,7 @@
  * UART6_CTS  |   PG13   |          |          *
 \**********************************************/
 
-/*  选择 Printf() 函数用的串口 */
+/*  閫夋嫨 Printf() 鍑芥暟鐢ㄧ殑涓插彛 */
 /*
 USART1
 USART2
@@ -45,17 +45,17 @@ UART4
 UART5
 USART6
 */
-#define Printf_USART USART2
+#define Printf_USART USART1
 
-#define EN_USART1_ (0) //Enable(1)/Disable(0)
-#define EN_USART2_ (1) //Enable(1)/Disable(0)
+#define EN_USART1_ (1) //Enable(1)/Disable(0)
+#define EN_USART2_ (0) //Enable(1)/Disable(0)
 #define EN_USART3_ (0) //Enable(1)/Disable(0)
 #define EN_UART4_  (0) //Enable(1)/Disable(0)
 #define EN_UART5_  (0) //Enable(1)/Disable(0)
 #define EN_USART6_ (0) //Enable(1)/Disable(0)
 
-#define EN_USART1_PB_6_PB_7   (1)
-#define EN_USART1_PA_9_PA_10  (0)
+#define EN_USART1_PB_6_PB_7   (0)
+#define EN_USART1_PA_9_PA_10  (1)
 
 #define EN_USART2_PA_2_PA_3   (1)
 #define EN_USART2_PD_5_PD_6   (0)
