@@ -20,13 +20,13 @@ void SYS_INIT(void)
     USART_NVIC_Configuration(1, 1, 0, 0);
     printf("\r\n USART IS OK !");
     /***LCD初始化***/
-//    LCD_Init();
-//    while (OV7670_Init())delay_ms(300);
-//    delay_ms(1000);
-//    TFT_Window(0, 0, 240, 320);
-//    DMA_Cmd(DMA2_Stream1, ENABLE);
-//    DCMI_Cmd(ENABLE);
-//    DCMI_CaptureCmd(ENABLE);
+    LCD_Init();
+    while (OV7670_Init())delay_ms(300);
+    delay_ms(1000);
+    TFT_Window(0, 0, 240, 320);
+    DMA_Cmd(DMA2_Stream1, ENABLE);
+    DCMI_Cmd(ENABLE);
+    DCMI_CaptureCmd(ENABLE);
 //    while (SD_Init()!= SD_OK)       //检测SD卡
 //    {
 //        delay_ms(200);

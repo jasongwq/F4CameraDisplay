@@ -247,7 +247,7 @@ void Cam_Init(void)
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-    RCC_MCO1Config(RCC_MCO1Source_PLLCLK, RCC_MCO1Div_5); //F_XCLK = 56MHz
+    RCC_MCO1Config(RCC_MCO1Source_PLLCLK, RCC_MCO1Div_3); //F_XCLK = 56MHz
 
     /****** Configures the DCMI GPIOs ******/
     /*** Connect DCMI pins to AF13 ***/
