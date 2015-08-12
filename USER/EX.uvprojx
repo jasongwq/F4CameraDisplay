@@ -50,7 +50,7 @@
           <OutputName>EX</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>1</CreateHexFile>
+          <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\OBJ\</ListingPath>
@@ -210,7 +210,7 @@
             <AdsLven>1</AdsLven>
             <AdsLsxf>1</AdsLsxf>
             <RvctClst>0</RvctClst>
-            <GenPPlst>1</GenPPlst>
+            <GenPPlst>0</GenPPlst>
             <AdsCpuType>"Cortex-M4"</AdsCpuType>
             <RvctDeviceName></RvctDeviceName>
             <mOS>0</mOS>
@@ -517,11 +517,6 @@
           <GroupName>APP</GroupName>
           <Files>
             <File>
-              <FileName>EasyTracer2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\APP\EasyTracer2.c</FilePath>
-            </File>
-            <File>
               <FileName>data_transfer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\APP\data_transfer.c</FilePath>
@@ -708,23 +703,6 @@
         </Group>
         <Group>
           <GroupName>FATFS</GroupName>
-          <Files>
-            <File>
-              <FileName>exfuns.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\GLIB\FATFS\exfuns\exfuns.c</FilePath>
-            </File>
-            <File>
-              <FileName>diskio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\GLIB\FATFS\src\diskio.c</FilePath>
-            </File>
-            <File>
-              <FileName>ff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\GLIB\FATFS\src\ff.c</FilePath>
-            </File>
-          </Files>
         </Group>
       </Groups>
     </Target>

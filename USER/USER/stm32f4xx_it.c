@@ -134,30 +134,35 @@ void USBWakeUp_IRQHandler(void)
 {
 }
 #include "lcd.h"
-extern vu16 Lcd_Memory[];
-extern vu16 Lcd_Memory2[];
+extern u16 Lcd_Memory[];
+extern  u8 Lcd_MemoryY[];
+extern  u8 Lcd_MemoryGraybit[];
 #define LCD_FIFO_NUM 5
-vu16 Lcd_Memory3[LCD_FIFO_NUM][320];
-vu32 Lcd_Memory4[240][320 / 32];
+//vu16 Lcd_Memory3[LCD_FIFO_NUM][320];
 extern char flag;
 #include "EasyTracer.h"
 #include "ov7670.h"
+vu32 Lcd_Memory4[OV7670XP/OV7670XF][OV7670YP/OV7670YF / 32];
+int Ov7670FrameRate=0;
+#include "sys_usart.h"
 
 void DCMI_IRQHandler(void)
 {
     static int line;
     // Przerwanie generowane po odebraniu pelnej ramki
-    if (DCMI_GetITStatus(DCMI_IT_FRAME) == SET)
+    if (DCMI_GetITStatus(DCMI_IT_FRAME) == SET)//帧中断
     {
         DCMI_ClearITPendingBit(DCMI_IT_FRAME);
         flag = 1;
+			  Ov7670FrameRate++;
+			SYS_USART_SendData(Printf_USART,0xff);
         line = -1;
 //                     LCD_WriteRAM_Prepare();
 //                      DCMI_CaptureCmd(ENABLE);
         DCMI_CaptureCmd(ENABLE);
     }
     // Przerwanie generowane przy zmianie stanu sygnalu VSYNC z aktywnego na nieaktywny (VPOL = Low)
-    if (DCMI_GetITStatus(DCMI_IT_VSYNC) == SET)
+    if (DCMI_GetITStatus(DCMI_IT_VSYNC) == SET)//垂直同步 同步场中断
     {
         DCMI_ClearITPendingBit(DCMI_IT_VSYNC);
         while (DMA_GetFlagStatus(DMA2_Stream1, DMA_FLAG_TCIF1) == RESET);
@@ -169,35 +174,51 @@ void DCMI_IRQHandler(void)
     // Przerwanie generowane przy zmianie stanu sygnalu HSYNC z aktywnego na nieaktywny (HPOL = Low)
     if (DCMI_GetITStatus(DCMI_IT_LINE) == SET)
     {
-        int temp, i, j, Gray;
+//			int temp, j;
+        int i, Gray;
         DCMI_ClearITPendingBit(DCMI_IT_LINE);
-        if ((++line) < 240)
+        if (((++line) < OV7670XP)&&(0==line%OV7670XF))
         {
-            for (i = 0; i < 320; i++)Lcd_Memory2[i] = Lcd_Memory[i];
-            for (i = 0; i < 320 / 32; i++)
+          //for (i = 0; i < OV7670YP/OV7670YF; i++){Lcd_Memory2[i] = Lcd_Memory[i*OV7670YF];LCD_WR_Data(Lcd_Memory[i*OV7670YF]);}
+          for (i = 0; i < OV7670YP/OV7670YF; i++)
+					{
+//						Lcd_Memory2[i]=Lcd_Memory[i*OV7670YF]>>8;
+						vu8 tmp=Lcd_Memory[i*OV7670YF]>>8;
+						if(0xff==tmp)
+							Lcd_MemoryY[i] = 0xfe;
+						else
+							Lcd_MemoryY[i] = tmp;
+					}
+          Sys_sPrintf(Printf_USART,(u8*)Lcd_MemoryY,OV7670YP/OV7670YF);
+					for (i = 0; i < OV7670YP/OV7670YF; i++)
             {
-                for (j = 0; j < 32; j++)
-                {
 #if OV7670_USE_RGB
-                    Gray = RGB_To_Gray(Lcd_Memory2[i * 32 + j]);
+                    Gray = RGB_To_Gray(Lcd_Memory2[i]);
                     if (Gray > Gray_Threshold_H || Gray < Gray_Threshold_L) //80点 190//激光
                         temp = (temp << 1) | 1;
                     else temp = temp << 1;
 #endif
 #if OV7670_USE_YUV
-                    Gray = Lcd_Memory2[i * 32 + j]>>8; //RGB_To_Gray(Lcd_Memory2[i * 32 + j]);
-                    if (Gray > Gray_Threshold_H || Gray < Gray_Threshold_L) //80点 190//激光
+                    Gray = Lcd_MemoryY[i];//>>8; //RGB_To_Gray(Lcd_Memory2[i * 32 + j]);
+                    if (Gray > Gray_Threshold_L && Gray < Gray_Threshold_H) //80点 190//激光
 										{
-										//LCD_WR_Data(0);
-                        temp = (temp << 1) | 1;
+										    //LCD_WR_Data(0);
+											  Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]=1;
+                        //temp = (temp << 1) | 1;
                     }
 										else 
-										{temp = temp << 1;
-										//LCD_WR_Data(0xffff);
+										{
+											  Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]=0;
+											  //temp = temp << 1;
+										  //LCD_WR_Data(0xffff);
 										}
+										//Sys_sPrintf(USART2,)
+										//u16 tmp=Gray>>3;
+										u16 tmp=Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]<<7>>3;
+								    //LCD_WR_Data(tmp<<11|tmp<<6|tmp);
+										//LCD_WR_Data(Lcd_MemoryGraybit[i * 32 + j]<<7);
 #endif
-                }
-                Lcd_Memory4[line][i] = temp;
+               //Lcd_Memory4[line/OV7670XF][i] = temp;
             }
         }
         // Wlacz przyjmowanie danych obrazu

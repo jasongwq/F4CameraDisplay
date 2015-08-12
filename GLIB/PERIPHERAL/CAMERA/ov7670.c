@@ -211,6 +211,7 @@ void OV7670_Window_Set(u16 sx, u16 sy, u16 width, u16 height)
     OV_ReadReg(0X32, &temp);            //读取Href之前的值
     temp &= 0XC0;
     temp |= ((endy & 0X07) << 3) | (sy & 0X07);
+	  SCCB_WR_Reg(0X32, temp);
     SCCB_WR_Reg(0X17, sy >> 3);         //设置Href的start高8位
     SCCB_WR_Reg(0X18, endy >> 3);       //设置Href的end的高8位
 }
@@ -225,8 +226,10 @@ void DCMI_NVIC_Config(void)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 }
-vu16 Lcd_Memory[320];
-vu16 Lcd_Memory2[320];
+
+u16 Lcd_Memory[OV7670YP];
+u8 Lcd_MemoryY[OV7670YP/OV7670YF];
+u8 Lcd_MemoryGraybit[24*32];
 
 void Cam_Init(void)
 {
@@ -375,12 +378,22 @@ u8 OV7670_Init(void)
     }
 		#endif
 		
+//		 for (i = 0; i < OV7670_TEST_REG_NUM; i++)
+//    {
+//        if (OV_WriteReg(OV7670_TEST_reg[i][0], OV7670_TEST_reg[i][1]))return 1;
+//    }
+//		for (i = 0; i < (sizeof(ov7670_qcif_regs)/2); i++)
+//    {
+//        if (OV_WriteReg(ov7670_qcif_regs[i][0], ov7670_qcif_regs[i][1]))return 1;
+//    }
+//		
+		
     return 0;
 
 }
 void Cam_Start(void)
 {
-    TFT_Window(0, 0, 240, 320);
+    //TFT_Window(0, 0, 240, 320);
     DMA_Cmd(DMA2_Stream1, ENABLE);
     DCMI_Cmd(ENABLE);
     DCMI_CaptureCmd(ENABLE);

@@ -11,6 +11,11 @@
 #define DCMI_TO_LCD           (0)
 #define DCMI_TO_RAM           (1)
 
+#define OV7670XP 240
+#define OV7670YP 320
+#define OV7670XF 10
+#define OV7670YF 10
+
 
 //#define OV7670_REG_NUM        168
 #define SCCB_SIC_H()     Set_B8
@@ -38,6 +43,46 @@ u8 OV_ReadReg(u8 regID, u8 *regDat);
 void OV_Reset(void);
 u8 OV_ReadID(void);
 
+#define OV7670_TEST_REG_NUM  4
+#define REG_COM3    0x0c    /* Control 3 */
+#define  COM3_SWAP    0x40    /* Byte swap */
+#define  COM3_SCALEEN     0x08    /* Enable scaling */
+#define  COM3_DCWEN   0x04    /* Enable downsamp/crop/window */
+#define REG_COM9    0x14    /* Control 9  - gain ceiling */
+#define REG_COM13   0x3d    /* Control 13 */
+#define REG_COM14   0x3e    /* Control 14 */
+#define   COM14_DCWEN     0x10    /* DCW/PCLK-scale enable */
+
+static u8 ov7670_qcif_regs[][2] = {
+{ REG_COM3, COM3_SCALEEN|COM3_DCWEN },
+		//{ REG_COM3, COM3_DCWEN },
+		{ REG_COM14, COM14_DCWEN | 0x01},
+{ 0x73, 0xf1 },
+{ 0xa2, 0x52 },
+{ 0x7b, 0x1c },
+{ 0x7c, 0x28 },
+{ 0x7d, 0x3c },
+{ 0x7f, 0x69 },
+{ REG_COM9, 0x38 },
+{ 0xa1, 0x0b },
+{ 0x74, 0x19 },
+{ 0x9a, 0x80 },
+{ 0x43, 0x14 },
+{ REG_COM13, 0xc0 },
+{ 0xff, 0xff },
+{0x72, 0x00},
+
+};
+
+static u8 OV7670_TEST_reg[OV7670_TEST_REG_NUM][2] =
+{
+    {0x12, 0x0c}, //0000 1100
+//  {0x0c, 0x4c}  //0100 1100
+    {0x70, 0x3a}, //0011 1010
+    {0x71, 0x35}, //0011 0101
+    {0x72, 0x00},
+//    {0x40, 0xd0}, //1101 0000
+};
 #if OV7670_USE_RGB
 #define OV7670_RGB_REG_NUM  176
 static u8 OV7670_RGB_reg[OV7670_RGB_REG_NUM][2] =
@@ -245,7 +290,7 @@ static u8 OV7670_YUV_reg[OV7670_YUV_REG_NUM][2] =
     1         0       :      v y u y
     1         1       :      u y v y
     */
-    {0x3a, 0x18},
+    {0x3a, 0x19},
     {0x3d, 0x81},//0xc0,
     {0x32, 0x80},//0x00
     {0x17, 0x16},//0x16

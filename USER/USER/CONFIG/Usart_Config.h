@@ -45,10 +45,10 @@ UART4
 UART5
 USART6
 */
-#define Printf_USART USART1
+#define Printf_USART USART2
 
-#define EN_USART1_ (1) //Enable(1)/Disable(0)
-#define EN_USART2_ (0) //Enable(1)/Disable(0)
+#define EN_USART1_ (0) //Enable(1)/Disable(0)
+#define EN_USART2_ (1) //Enable(1)/Disable(0)
 #define EN_USART3_ (0) //Enable(1)/Disable(0)
 #define EN_UART4_  (0) //Enable(1)/Disable(0)
 #define EN_UART5_  (0) //Enable(1)/Disable(0)

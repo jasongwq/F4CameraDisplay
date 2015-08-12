@@ -1,6 +1,6 @@
 #include "sys_usart.h"
 #include <stdarg.h>
-static uint8_t SYS_USART_SendData(USART_TypeDef *USARTx, unsigned char DataToSend);
+//static uint8_t SYS_USART_SendData(USART_TypeDef *USARTx, unsigned char DataToSend);
 /**********************************************\
  *External Functions                          *
 \**********************************************/
@@ -203,7 +203,7 @@ void SYS_UART_IQR(USART_TypeDef *USARTx)
 }
 /**************************实现函数********************************************
 *******************************************************************************/
-static uint8_t SYS_USART_SendData(USART_TypeDef *USARTx, unsigned char DataToSend)
+uint8_t SYS_USART_SendData(USART_TypeDef *USARTx, unsigned char DataToSend)
 {
     int USARTn;
     if (USARTx == USART1)
