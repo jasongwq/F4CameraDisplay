@@ -41,25 +41,19 @@ int task_Image_Processing(void)
         {
             int k, j, i;
             flag = 0;
-//	        TFT_Window(0, 0, 48,32);
-//					LCD_SetCursor(0, 0);
-//          LCD_WriteRAM_Prepare();
-//            for (i = 0; i < (OV7670XP / OV7670XF * OV7670YP / OV7670YF); ++i)
-//            {
-////                *(&Lcd_MemoryGraybitLts[0] + i) = *(&Lcd_MemoryGraybit[0] + i);
-////								u16 tmp=Lcd_MemoryGraybit[i]<<7>>3;
-////								LCD_WR_Data(tmp<<11|tmp<<6|tmp);
-//							 LCD_WR_Data(0xffff);
-//            }
+            for (i = 0; i < (OV7670XP / OV7670XF * OV7670YP / OV7670YF); ++i)
             {
-                for (k = 0; k < 24*32; k++)
-                     LCD_WR_Data(0);
-//                for (k = 0; k < OV7670XP / OV7670XF; k++)
-//                    for (i = 0; i < OV7670YP / OV7670YF; i++);
-//                        if (Lcd_MemoryGraybit[k * OV7670YP / OV7670YF + i])
-//                            LCD_WR_Data(0);
-//                        else
-//                            LCD_WR_Data(0xffff);
+                *(&Lcd_MemoryGraybitLts[0] + i) = *(&Lcd_MemoryGraybit[0] + i);
+            }
+            {
+							LCD_SetCursor(320-32, 0);
+              LCD_WriteRAM_Prepare();
+                for (k = 0; k < OV7670XP / OV7670XF; k++)
+                    for (i = 0; i < OV7670YP / OV7670YF; i++)
+                        if (Lcd_MemoryGraybitLts[k * OV7670YP / OV7670YF + i])
+                            LCD_WR_Data(0);
+                        else
+                            LCD_WR_Data(0xffff);
             }
         }
     }

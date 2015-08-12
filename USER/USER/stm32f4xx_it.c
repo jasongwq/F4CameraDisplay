@@ -212,9 +212,8 @@ void DCMI_IRQHandler(void)
 											  //temp = temp << 1;
 										  //LCD_WR_Data(0xffff);
 										}
-										//Sys_sPrintf(USART2,)
 										//u16 tmp=Gray>>3;
-										u16 tmp=Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]<<7>>3;
+										//u16 tmp=Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]<<7>>3;
 								    //LCD_WR_Data(tmp<<11|tmp<<6|tmp);
 										//LCD_WR_Data(Lcd_MemoryGraybit[i * 32 + j]<<7);
 #endif
