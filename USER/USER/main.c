@@ -87,7 +87,6 @@ int main(void)
     SYS_INIT();
     while (1)
     {
-
         RunTaskA(task_Image_Processing, 1);
         //RunTaskA(task_usart, 2);
 			  RunTaskA(task_test,3);

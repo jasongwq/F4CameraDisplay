@@ -145,7 +145,7 @@ extern char flag;
 vu32 Lcd_Memory4[OV7670XP/OV7670XF][OV7670YP/OV7670YF / 32];
 int Ov7670FrameRate=0;
 #include "sys_usart.h"
-
+static int ut=0;
 void DCMI_IRQHandler(void)
 {
     static int line;
@@ -155,7 +155,12 @@ void DCMI_IRQHandler(void)
         DCMI_ClearITPendingBit(DCMI_IT_FRAME);
         flag = 1;
 			  Ov7670FrameRate++;
-			SYS_USART_SendData(Printf_USART,0xff);
+			ut++;
+			if(ut>1)ut=0;
+			if(1==ut)
+			{
+				SYS_USART_SendData(Printf_USART,0xff);
+			}
         line = -1;
 //                     LCD_WriteRAM_Prepare();
 //                      DCMI_CaptureCmd(ENABLE);
@@ -189,7 +194,9 @@ void DCMI_IRQHandler(void)
 						else
 							Lcd_MemoryY[i] = tmp;
 					}
-          Sys_sPrintf(Printf_USART,(u8*)Lcd_MemoryY,OV7670YP/OV7670YF);
+          if(1==ut){
+						Sys_sPrintf(Printf_USART,(u8*)Lcd_MemoryY,OV7670YP/OV7670YF);
+					}
 					for (i = 0; i < OV7670YP/OV7670YF; i++)
             {
 #if OV7670_USE_RGB
