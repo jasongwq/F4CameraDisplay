@@ -43,7 +43,7 @@ int task_led(void)
     {
         static char i = 0;
         WaitX(1000);
-			printf("\r\nOv7670FrameRate: %3d", Ov7670FrameRate);
+			//printf("\r\nOv7670FrameRate: %3d", Ov7670FrameRate);
 			Ov7670FrameRate=0;
         if (i)
         {

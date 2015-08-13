@@ -153,7 +153,7 @@ void DCMI_IRQHandler(void)
         DCMI_ClearITPendingBit(DCMI_IT_FRAME);
         flag = 1;
 			ut++;
-			if(ut>0)ut=0;
+			if(ut>1)ut=0;
 			if(1==ut)
 			{
 				SYS_USART_SendData(Printf_USART,0xff);

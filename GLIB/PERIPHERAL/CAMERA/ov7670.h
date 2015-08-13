@@ -13,8 +13,8 @@
 
 #define OV7670XP 240
 #define OV7670YP 320
-#define OV7670XF 2
-#define OV7670YF 2
+#define OV7670XF 10
+#define OV7670YF 10
 
 
 //#define OV7670_REG_NUM        168
