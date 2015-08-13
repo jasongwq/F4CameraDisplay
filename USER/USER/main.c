@@ -22,11 +22,11 @@ void SYS_INIT(void)
     while (OV7670_Init())
 		{delay_ms(300);}
     delay_ms(1000);
-	  OV7670_Window_Set(10,182,240,320);
-	  //OV7670_Window_Set(10,182,240,144);
+	  //OV7670_Window_Set(10,182,240,320);
+	  //OV7670_Window_Set(10,174,240,144);
     //TFT_Window(0, 0, 240, 144);
-	  OV7670_Contrast(4);
-	  TFT_Window(0, 0, OV7670XP/OV7670XF, OV7670YP/OV7670YF);
+	  //OV7670_Contrast(4);
+	  //TFT_Window(0, 0, OV7670XP/OV7670XF, OV7670YP/OV7670YF);
 	  //TFT_Window(0, 0, 120, 160);
 
     DMA_Cmd(DMA2_Stream1, ENABLE);
@@ -43,7 +43,7 @@ int task_led(void)
     {
         static char i = 0;
         WaitX(1000);
-			//printf("\r\nOv7670FrameRate: %3d", Ov7670FrameRate);
+			printf("\r\nOv7670FrameRate: %3d", Ov7670FrameRate);
 			Ov7670FrameRate=0;
         if (i)
         {
@@ -87,7 +87,7 @@ int main(void)
     SYS_INIT();
     while (1)
     {
-        RunTaskA(task_Image_Processing, 1);
+        //RunTaskA(task_Image_Processing, 1);
         //RunTaskA(task_usart, 2);
 			  //RunTaskA(task_test,3);
         RunTaskA(task_led, 5);

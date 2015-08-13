@@ -250,7 +250,7 @@ void Cam_Init(void)
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-    RCC_MCO1Config(RCC_MCO1Source_PLLCLK, RCC_MCO1Div_3); //F_XCLK = 56MHz
+    RCC_MCO1Config(RCC_MCO1Source_PLLCLK, RCC_MCO1Div_2); //F_XCLK = 56MHz
 
     /****** Configures the DCMI GPIOs ******/
     /*** Connect DCMI pins to AF13 ***/
@@ -377,8 +377,8 @@ u8 OV7670_Init(void)
         if (OV_WriteReg(OV7670_YUV_reg[i][0], OV7670_YUV_reg[i][1]))return 1;
     }
 		#endif
-		
-//		 for (i = 0; i < OV7670_TEST_REG_NUM; i++)
+//		
+//		 for (i = 0; i < sizeof(OV7670_TEST_reg)/2; i++)
 //    {
 //        if (OV_WriteReg(OV7670_TEST_reg[i][0], OV7670_TEST_reg[i][1]))return 1;
 //    }
@@ -387,7 +387,10 @@ u8 OV7670_Init(void)
 //        if (OV_WriteReg(ov7670_qcif_regs[i][0], ov7670_qcif_regs[i][1]))return 1;
 //    }
 //		
-		
+//		for (i = 0; i < (sizeof(ov7670_init_reg_tbl1)/2); i++)
+//    {
+//        if (OV_WriteReg(ov7670_init_reg_tbl1[i][0], ov7670_init_reg_tbl1[i][1]))return 1;
+//    }
     return 0;
 
 }

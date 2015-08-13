@@ -144,6 +144,7 @@ extern char flag;
 
 #include "sys_usart.h"
 static int ut=0;
+extern int Ov7670FrameRate;
 void DCMI_IRQHandler(void)
 {
     static int line;
@@ -152,6 +153,7 @@ void DCMI_IRQHandler(void)
     {
         DCMI_ClearITPendingBit(DCMI_IT_FRAME);
         flag = 1;
+			Ov7670FrameRate++;
 			ut++;
 			if(ut>1)ut=0;
 			if(1==ut)
@@ -168,6 +170,8 @@ void DCMI_IRQHandler(void)
     {
         DCMI_ClearITPendingBit(DCMI_IT_VSYNC);
         while (DMA_GetFlagStatus(DMA2_Stream1, DMA_FLAG_TCIF1) == RESET);
+						Ov7670FrameRate++;
+
         LCD_SetCursor(0, 0);
         LCD_WriteRAM_Prepare();
         DCMI_CaptureCmd(ENABLE);
@@ -192,16 +196,16 @@ void DCMI_IRQHandler(void)
 							Lcd_MemoryY[i] = tmp;
 					}
           if(1==ut){
-						Sys_sPrintf(Printf_USART,(u8*)Lcd_MemoryY,OV7670YP/OV7670YF);
+						//Sys_sPrintf(Printf_USART,(u8*)Lcd_MemoryY,OV7670YP/OV7670YF);
 					}
 					for (i = 0; i < OV7670YP/OV7670YF; i++)
             {
-#if OV7670_USE_RGB
-                    Gray = RGB_To_Gray(Lcd_Memory2[i]);
-                    if (Gray > Gray_Threshold_H || Gray < Gray_Threshold_L) //80点 190//激光
-                        temp = (temp << 1) | 1;
-                    else temp = temp << 1;
-#endif
+//#if OV7670_USE_RGB
+//                    Gray = RGB_To_Gray(Lcd_Memory2[i]);
+//                    if (Gray > Gray_Threshold_H || Gray < Gray_Threshold_L) //80点 190//激光
+//                        temp = (temp << 1) | 1;
+//                    else temp = temp << 1;
+//#endif
 #if OV7670_USE_YUV
                     Gray = Lcd_MemoryY[i];//>>8; //RGB_To_Gray(Lcd_Memory2[i * 32 + j]);
                     if (Gray > Gray_Threshold_L && Gray < Gray_Threshold_H)
