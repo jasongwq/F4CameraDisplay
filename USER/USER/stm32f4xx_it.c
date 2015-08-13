@@ -138,12 +138,10 @@ extern u16 Lcd_Memory[];
 extern  u8 Lcd_MemoryY[];
 extern  u8 Lcd_MemoryGraybit[];
 #define LCD_FIFO_NUM 5
-//vu16 Lcd_Memory3[LCD_FIFO_NUM][320];
 extern char flag;
 #include "EasyTracer.h"
 #include "ov7670.h"
-vu32 Lcd_Memory4[OV7670XP/OV7670XF][OV7670YP/OV7670YF / 32];
-int Ov7670FrameRate=0;
+
 #include "sys_usart.h"
 static int ut=0;
 void DCMI_IRQHandler(void)
@@ -154,9 +152,8 @@ void DCMI_IRQHandler(void)
     {
         DCMI_ClearITPendingBit(DCMI_IT_FRAME);
         flag = 1;
-			  Ov7670FrameRate++;
 			ut++;
-			if(ut>1)ut=0;
+			if(ut>0)ut=0;
 			if(1==ut)
 			{
 				SYS_USART_SendData(Printf_USART,0xff);
@@ -207,7 +204,7 @@ void DCMI_IRQHandler(void)
 #endif
 #if OV7670_USE_YUV
                     Gray = Lcd_MemoryY[i];//>>8; //RGB_To_Gray(Lcd_Memory2[i * 32 + j]);
-                    if (Gray > Gray_Threshold_L && Gray < Gray_Threshold_H) //80点 190//激光
+                    if (Gray > Gray_Threshold_L && Gray < Gray_Threshold_H)
 										{
 										    //LCD_WR_Data(0);
 											  Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]=1;

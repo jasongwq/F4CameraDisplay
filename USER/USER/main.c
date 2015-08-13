@@ -15,10 +15,10 @@ void SYS_INIT(void)
     USART2_Configuration(256000);
     USART_NVIC_Configuration(2, 1, 0, 0);
     printf("\r\n USART IS OK !");
-	  Sys_sPrintf(Printf_USART,"Sys_sPrintf",12);
+	  Sys_sPrintf(Printf_USART,"\r\nSys_sPrintf",14);
     /***LCD初始化***/
     LCD_Init();
-	LCD_ShowString(32,24,288,16,16,"HELLHHHHHHHHHHHHHHHHHHHHHHHHHHHO");
+	  LCD_ShowString(32,24,288,16,16,"HELLHHHHHHHHHHHHHHHHHHHHHHHHHHHO");
     while (OV7670_Init())
 		{delay_ms(300);}
     delay_ms(1000);
@@ -32,7 +32,7 @@ void SYS_INIT(void)
     DMA_Cmd(DMA2_Stream1, ENABLE);
     DCMI_Cmd(ENABLE);
     DCMI_CaptureCmd(ENABLE);
-		printf("      SD OK          ");
+		printf("Init OK          ");
 }
 extern int Ov7670FrameRate;
 int task_led(void)
@@ -43,7 +43,7 @@ int task_led(void)
     {
         static char i = 0;
         WaitX(1000);
-			//printf("\r\nOv7670FrameRate: %3d", Ov7670FrameRate);
+			printf("\r\nOv7670FrameRate: %3d", Ov7670FrameRate);
 			Ov7670FrameRate=0;
         if (i)
         {
@@ -89,7 +89,7 @@ int main(void)
     {
         RunTaskA(task_Image_Processing, 1);
         //RunTaskA(task_usart, 2);
-			  RunTaskA(task_test,3);
+			  //RunTaskA(task_test,3);
         RunTaskA(task_led, 5);
     }
 }

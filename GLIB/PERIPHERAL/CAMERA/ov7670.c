@@ -229,7 +229,7 @@ void DCMI_NVIC_Config(void)
 
 u16 Lcd_Memory[OV7670YP];
 u8 Lcd_MemoryY[OV7670YP/OV7670YF];
-u8 Lcd_MemoryGraybit[24*32];
+u8 Lcd_MemoryGraybit[OV7670XP/OV7670XF*OV7670YP/OV7670YF];
 
 void Cam_Init(void)
 {
