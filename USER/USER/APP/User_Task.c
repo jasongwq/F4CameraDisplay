@@ -1,6 +1,7 @@
 #include "lcd.h"
 #include "math.h"
 #include "sys_os.h"
+#include "sys_usart.h"
 #include "gpio.h"
 #include "EasyTracer.h"
 #include "USART.h"
@@ -11,7 +12,7 @@ int Gray_Threshold_H = 256;
 int Gray_Threshold_L = 180;
 
 
-const int Gray_ThresholdLDef = 140;//120;
+const int Gray_ThresholdLDef = 180;//120;
 const int Gray_ThresholdHDef = 256;
 
 #define Result_Filter_NUM 20
@@ -73,10 +74,10 @@ void LCDImageDisplay(void)
                     LCD_WR_Data(0xffff);//黑色
     }
 }
-void FindPoint(void)
+int FindPoint(void)
 {
 //找点
-    const int BigpointR = 50/OV7670XF; //要找的圆直径
+    const int BigpointR = 40 / OV7670XF; //要找的圆直径
     int BlackPointCountX = 0;
     int BlackPointCountY = 0;
     int BlackPointCountXMax = 0;
@@ -135,8 +136,15 @@ void FindPoint(void)
                                     && (0 == Lcd_MemoryGraybitLtsAround(-R, -R))
                                )
                             {
+#if 1==USART_DISPLAY
+
+                                SYS_USART_SendData(Printf_USART, 0xEB);
+                                SYS_USART_SendData(Printf_USART, BlackPointCountYMax);
+                                SYS_USART_SendData(Printf_USART, BlackPointCountXMax);
+                                SYS_USART_SendData(Printf_USART, 0xAE);
+#endif
                                 Draw_Circle(320 - OV7670YP / OV7670YF + BlackPointCountYMax , BlackPointCountXMax , BigpointR);
-                                break;
+                                return 1;
                             }
                             else
                             {
@@ -172,6 +180,97 @@ void FindPoint(void)
             BlackPointCountY = 0;
         }
     }
+		return 0;
+}
+#define OV7670X (OV7670XP / OV7670XF)
+#define OV7670Y (OV7670YP / OV7670YF)
+#define Lcd_MemoryGraybitLts2Array(a, b) Lcd_MemoryGraybitLts[ (a) * OV7670Y+ (b) ]
+#define IsPoint(a,b) (0==Lcd_MemoryGraybitLts2Array((a),(b)))
+
+void ImageFindLine(void)
+{
+    int lineA = 0;
+    int lineB = 0;
+    int lineC = 0;
+    int lineD = 0;
+    TFT_Window(0, 0, 240, 320);
+    {
+        int i ;
+        int BlackPointCount = 0;
+        for ( i = 0; i < OV7670X; ++i)
+        {
+            if (IsPoint(i, 0))
+            {
+                BlackPointCount++;
+            }
+            else if (BlackPointCount != 0)
+            {
+                break;
+            }
+        }
+        lineA = i - BlackPointCount / 2;
+    }
+    {
+        int i ;
+        int BlackPointCount = 0;
+        for ( i = 0; i < OV7670X; ++i)
+        {
+            if (IsPoint(i, OV7670Y - 1))
+            {
+                BlackPointCount++;
+            }
+            else if (BlackPointCount != 0)
+            {
+                break;
+            }
+        }
+        lineC = i - BlackPointCount / 2;
+    }
+    {
+        int i ;
+        int BlackPointCount = 0;
+        for ( i = 0; i < OV7670Y; ++i)
+        {
+            if (IsPoint(OV7670X - 1, i))
+            {
+                BlackPointCount++;
+            }
+            else if (BlackPointCount != 0)
+            {
+                break;
+            }
+        }
+        lineB = i - BlackPointCount / 2;
+    }
+    {
+        int i ;
+        int BlackPointCount = 0;
+        for ( i = 0; i < OV7670Y; ++i)
+        {
+            if (IsPoint(0, i))
+            {
+                BlackPointCount++;
+            }
+            else if (BlackPointCount != 0)
+            {
+                break;
+            }
+        }
+        lineD = i - BlackPointCount / 2;
+    }
+    LCD_ShowNum(0,  0, lineA, 3, 16);
+    LCD_ShowNum(0, 16, lineB, 3, 16);
+    LCD_ShowNum(0, 16 * 2, lineC, 3, 16);
+    LCD_ShowNum(0, 16 * 3, lineD, 3, 16);
+
+#if 1==USART_DISPLAY
+    SYS_USART_SendData(Printf_USART, 0xEA);
+    SYS_USART_SendData(Printf_USART, lineA);
+    SYS_USART_SendData(Printf_USART, lineB);
+    SYS_USART_SendData(Printf_USART, lineC);
+    SYS_USART_SendData(Printf_USART, lineD);
+    SYS_USART_SendData(Printf_USART, 0xAE);
+#endif
 }
 int Ov7670FrameRate = 0;
 
@@ -195,17 +294,15 @@ int task_Image_Processing(void)
             Ov7670FrameRate++;
             flag = 0;
             ImageLst();
-            TFT_Window(OV7670XP / OV7670XF, 0, OV7670XP / OV7670XF, OV7670YP / OV7670YF);
-            LCD_SetCursor(320 - OV7670YP / OV7670YF, OV7670XP / OV7670XF);
-            LCDImageDisplay();
-
-            ImageFilter();
-
+            // TFT_Window(OV7670XP / OV7670XF, 0, OV7670XP / OV7670XF, OV7670YP / OV7670YF);
+            // LCD_SetCursor(320 - OV7670YP / OV7670YF, OV7670XP / OV7670XF);
+            // LCDImageDisplay();
+            //ImageFilter();
             TFT_Window(0, 0, OV7670XP / OV7670XF, OV7670YP / OV7670YF);
             LCD_SetCursor(320 - OV7670YP / OV7670YF, 0);
             LCDImageDisplay();
-
-            FindPoint();
+            if(1!=FindPoint())
+							ImageFindLine();
         }
     }
     _EE

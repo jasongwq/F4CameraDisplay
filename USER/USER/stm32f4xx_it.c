@@ -23,17 +23,17 @@ void USART1_IRQHandler(void)  //串口中断函数
 {
     //ATK_Usart1_IQR();
     //WTH_USART1_IRQHandler();
-		SYS_UART_IQR(USART1);
+    SYS_UART_IQR(USART1);
 }
 void USART2_IRQHandler(void)  //串口中断函数
 {
     //ATK_Usart2_IQR();
     //WTH_USART2_IRQHandler();
-		SYS_UART_IQR(USART2);
+    SYS_UART_IQR(USART2);
 }
 void USART3_IRQHandler(void)  //串口中断函数
 {
-SYS_UART_IQR(USART3);
+    SYS_UART_IQR(USART3);
 }/*
 void DMA1_Channel1_IRQHandler(void)
 {
@@ -141,9 +141,11 @@ extern  u8 Lcd_MemoryGraybit[];
 extern char flag;
 #include "EasyTracer.h"
 #include "ov7670.h"
-
 #include "sys_usart.h"
-static int ut=0;
+
+int ut = 0;
+u32 GraySum = 0;
+int GraySumCount = 0;
 void DCMI_IRQHandler(void)
 {
     static int line;
@@ -152,15 +154,18 @@ void DCMI_IRQHandler(void)
     {
         DCMI_ClearITPendingBit(DCMI_IT_FRAME);
         flag = 1;
-			ut++;
-			if(ut>1)ut=0;
-			if(1==ut)
-			{
-				SYS_USART_SendData(Printf_USART,0xff);
-			}
+        //Gray_Threshold_L=GraySum/GraySumCount;
+        GraySum = 0;
+        GraySumCount = 0;
+#if 1==USART_DISPLAY
+        ut++;
+        if (ut > 1)ut = 0;
+        if (1 == ut)
+        {
+            SYS_USART_SendData(Printf_USART, 0xff);
+        }
+#endif
         line = -1;
-//                     LCD_WriteRAM_Prepare();
-//                      DCMI_CaptureCmd(ENABLE);
         DCMI_CaptureCmd(ENABLE);
     }
     // Przerwanie generowane przy zmianie stanu sygnalu VSYNC z aktywnego na nieaktywny (VPOL = Low)
@@ -176,52 +181,50 @@ void DCMI_IRQHandler(void)
     // Przerwanie generowane przy zmianie stanu sygnalu HSYNC z aktywnego na nieaktywny (HPOL = Low)
     if (DCMI_GetITStatus(DCMI_IT_LINE) == SET)
     {
-//			int temp, j;
         int i, Gray;
         DCMI_ClearITPendingBit(DCMI_IT_LINE);
-        if (((++line) < OV7670XP)&&(0==line%OV7670XF))
+        if (((++line) < OV7670XP) && (0 == line % OV7670XF))
         {
-          //for (i = 0; i < OV7670YP/OV7670YF; i++){Lcd_Memory2[i] = Lcd_Memory[i*OV7670YF];LCD_WR_Data(Lcd_Memory[i*OV7670YF]);}
-          for (i = 0; i < OV7670YP/OV7670YF; i++)
-					{
-//						Lcd_Memory2[i]=Lcd_Memory[i*OV7670YF]>>8;
-						vu8 tmp=Lcd_Memory[i*OV7670YF]>>8;
-						if(0xff==tmp)
-							Lcd_MemoryY[i] = 0xfe;
-						else
-							Lcd_MemoryY[i] = tmp;
-					}
-          if(1==ut){
-						Sys_sPrintf(Printf_USART,(u8*)Lcd_MemoryY,OV7670YP/OV7670YF);
-					}
-					for (i = 0; i < OV7670YP/OV7670YF; i++)
+            for (i = 0; i < OV7670YP / OV7670YF; i++)
             {
-#if OV7670_USE_RGB
-                    Gray = RGB_To_Gray(Lcd_Memory2[i]);
-                    if (Gray > Gray_Threshold_H || Gray < Gray_Threshold_L) //80点 190//激光
-                        temp = (temp << 1) | 1;
-                    else temp = temp << 1;
+                vu8 tmp = Lcd_Memory[i * OV7670YF] >> 8;
+                if (0xff == tmp)
+                    Lcd_MemoryY[i] = 0xfe;
+                else
+                    Lcd_MemoryY[i] = tmp;
+            }
+#if 1==USART_DISPLAY
+            if (1 == ut) {
+                Sys_sPrintf(Printf_USART, (u8*)Lcd_MemoryY, OV7670YP / OV7670YF);
+            }
 #endif
+            for (i = 0; i < OV7670YP / OV7670YF; i++)
+            {
+//#if OV7670_USE_RGB
+//                Gray = RGB_To_Gray(Lcd_Memory2[i]);
+//                if (Gray > Gray_Threshold_H || Gray < Gray_Threshold_L) //80点 190//激光
+//                    temp = (temp << 1) | 1;
+//                else temp = temp << 1;
+//#endif
 #if OV7670_USE_YUV
-                    Gray = Lcd_MemoryY[i];//>>8; //RGB_To_Gray(Lcd_Memory2[i * 32 + j]);
-                    if (Gray > Gray_Threshold_L && Gray < Gray_Threshold_H)
-										{
-										    //LCD_WR_Data(0);
-											  Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]=1;
-                        //temp = (temp << 1) | 1;
-                    }
-										else 
-										{
-											  Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]=0;
-											  //temp = temp << 1;
-										  //LCD_WR_Data(0xffff);
-										}
-										//u16 tmp=Gray>>3;
-										//u16 tmp=Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]<<7>>3;
-								    //LCD_WR_Data(tmp<<11|tmp<<6|tmp);
-										//LCD_WR_Data(Lcd_MemoryGraybit[i * 32 + j]<<7);
+                Gray = Lcd_MemoryY[i];
+                if (Gray > Gray_Threshold_L && Gray < Gray_Threshold_H)
+                {
+                    //LCD_WR_Data(0);
+                    Lcd_MemoryGraybit[line / OV7670XF * OV7670YP / OV7670YF + i] = 1;
+                }
+                else
+                {
+                    Lcd_MemoryGraybit[line / OV7670XF * OV7670YP / OV7670YF + i] = 0;
+                    //LCD_WR_Data(0xffff);
+                }
+                //u16 tmp=Gray>>3;
+                //u16 tmp=Lcd_MemoryGraybit[line/OV7670XF*OV7670YP/OV7670YF +i]<<7>>3;
+                //LCD_WR_Data(tmp<<11|tmp<<6|tmp);
+                //LCD_WR_Data(Lcd_MemoryGraybit[i * 32 + j]<<7);
 #endif
-               //Lcd_Memory4[line/OV7670XF][i] = temp;
+                GraySum += Gray;
+                GraySumCount++;
             }
         }
         // Wlacz przyjmowanie danych obrazu

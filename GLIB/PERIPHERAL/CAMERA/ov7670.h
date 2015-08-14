@@ -5,6 +5,7 @@
 
 #define DCMI_DR_ADDRESS         0x50050028
 #define FSMC_LCD_ADDRESS        0x60020000
+#define USART_DISPLAY 0
 
 #define OV7670_USE_RGB        (0)
 #define OV7670_USE_YUV        (1)
@@ -13,8 +14,8 @@
 
 #define OV7670XP 240
 #define OV7670YP 320
-#define OV7670XF 10
-#define OV7670YF 10
+#define OV7670XF 5
+#define OV7670YF 5
 
 
 //#define OV7670_REG_NUM        168
