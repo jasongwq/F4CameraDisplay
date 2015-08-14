@@ -136,7 +136,7 @@ int FindPoint(void)
                                     && (0 == Lcd_MemoryGraybitLtsAround(-R, -R))
                                )
                             {
-#if 1==USART_DISPLAY
+#if 2==USART_DISPLAY
 
                                 SYS_USART_SendData(Printf_USART, 0xEB);
                                 SYS_USART_SendData(Printf_USART, BlackPointCountYMax);
@@ -180,7 +180,7 @@ int FindPoint(void)
             BlackPointCountY = 0;
         }
     }
-		return 0;
+    return 0;
 }
 #define OV7670X (OV7670XP / OV7670XF)
 #define OV7670Y (OV7670YP / OV7670YF)
@@ -189,10 +189,10 @@ int FindPoint(void)
 
 void ImageFindLine(void)
 {
-    int lineA = 0;
-    int lineB = 0;
-    int lineC = 0;
-    int lineD = 0;
+    static int lineA = 0;
+    static int lineB = 0;
+    static int lineC = 0;
+    static int lineD = 0;
     TFT_Window(0, 0, 240, 320);
     {
         int i ;
@@ -240,7 +240,17 @@ void ImageFindLine(void)
                 break;
             }
         }
-        lineB = i - BlackPointCount / 2;
+        if (OV7670Y == i)
+            if (lineB > 32)
+            {
+                lineB = OV7670Y;
+            }
+            else
+            {
+                lineB = 0;
+            }
+        else
+            lineB = i - BlackPointCount / 2;
     }
     {
         int i ;
@@ -256,14 +266,24 @@ void ImageFindLine(void)
                 break;
             }
         }
-        lineD = i - BlackPointCount / 2;
+        if (OV7670Y == i)
+            if (lineD > 32)
+            {
+                lineD = OV7670Y;
+            }
+            else
+            {
+                lineD = 0;
+            }
+        else
+            lineD = i - BlackPointCount / 2;
     }
     LCD_ShowNum(0,  0, lineA, 3, 16);
     LCD_ShowNum(0, 16, lineB, 3, 16);
     LCD_ShowNum(0, 16 * 2, lineC, 3, 16);
     LCD_ShowNum(0, 16 * 3, lineD, 3, 16);
 
-#if 1==USART_DISPLAY
+#if 2==USART_DISPLAY
     SYS_USART_SendData(Printf_USART, 0xEA);
     SYS_USART_SendData(Printf_USART, lineA);
     SYS_USART_SendData(Printf_USART, lineB);
@@ -301,8 +321,8 @@ int task_Image_Processing(void)
             TFT_Window(0, 0, OV7670XP / OV7670XF, OV7670YP / OV7670YF);
             LCD_SetCursor(320 - OV7670YP / OV7670YF, 0);
             LCDImageDisplay();
-            if(1!=FindPoint())
-							ImageFindLine();
+            if (1 != FindPoint())
+                ImageFindLine();
         }
     }
     _EE

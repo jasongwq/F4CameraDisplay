@@ -5,7 +5,7 @@
 
 #define DCMI_DR_ADDRESS         0x50050028
 #define FSMC_LCD_ADDRESS        0x60020000
-#define USART_DISPLAY 0
+#define USART_DISPLAY 2
 
 #define OV7670_USE_RGB        (0)
 #define OV7670_USE_YUV        (1)
