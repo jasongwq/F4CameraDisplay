@@ -77,7 +77,7 @@ void LCDImageDisplay(void)
 int FindPoint(void)
 {
 //找点
-    const int BigpointR = 40 / OV7670XF; //要找的圆直径
+    const int BigpointR = 60 / OV7670XF; //要找的圆直径
     int BlackPointCountX = 0;
     int BlackPointCountY = 0;
     int BlackPointCountXMax = 0;
@@ -321,7 +321,7 @@ int task_Image_Processing(void)
             TFT_Window(0, 0, OV7670XP / OV7670XF, OV7670YP / OV7670YF);
             LCD_SetCursor(320 - OV7670YP / OV7670YF, 0);
             LCDImageDisplay();
-            if (1 != FindPoint())
+            //if (1 != FindPoint())
                 ImageFindLine();
         }
     }
